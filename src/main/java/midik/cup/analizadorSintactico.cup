@@ -1,0 +1,369 @@
+package midik.cup;
+import java_cup.runtime.Symbol;
+import midik.arbol.NodoAST;
+import java.util.ArrayList;
+
+parser code
+{:  
+    private NodoAST raiz;
+
+    private ArrayList<Object> comList;
+    private ArrayList<Object> comList2;
+
+    public parser(java_cup.runtime.Scanner s, String param){
+        this(s);
+        System.out.println("Parametro desde parser: " + param);
+    }
+
+    public void syntax_error(Symbol s){
+        System.out.println("Error sintactico: " + s.value.toString() + " Linea:" + s.right + " Columna:" + s.left + ". ");
+    }
+
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception {
+        System.out.println("No se pudo recuperar el analizador." + " Linea:" + s.right + " Columna:" + s.left + "\n");
+    }
+
+    public NodoAST getRaiz(){
+        return this.raiz;
+    }
+
+    private ArrayList<Object> unirArrayList(ArrayList<Object> lista1, ArrayList<Object> lista2){
+        ArrayList<Object> listaUnida = new ArrayList<>(lista1);
+        listaUnida.addAll(lista2);
+        return listaUnida;
+    }
+
+    private void cambiarRaiz(NodoAST nodo){
+        this.raiz = nodo;
+    }
+:};
+
+terminal String EXTIENDE,ENTERO,DOBLE,BOOLEAN,CARACTER,CADENA,KEEP,VAR,ARREGLO,SI,
+SINO,SWITCH,CASO,SALIR,DEFAULT,PARA,MIENTRAS,HACER,CONTINUAR,RETORNA,REPRODUCIR,
+ESPERAR,ORDENAR,SUMARIZAR,LONGITUD,MENSAJE,PRINCIPAL,P_COMA,PUNTO,COMA,DOS_PUNTOS,
+LLAVE_A,LLAVE_C,PARENTESIS_A,PARENTESIS_C,IGUAL,MAYOR_IGUAL,MENOR_IGUAL,ASIGNACION,
+MAYOR_QUE,MENOR_QUE,DIFERENTE,IS_NULL,AND,OR,NOT,NAND,NOR,XOR,
+MOD,POT,INCREMENTO,DECREMENTO,ID,ENTERO_VAL,DOBLE_VAL,CADENA_VAL, CORCHETE_A, CORCHETE_C,
+VERDADERO,FALSO, CARACTER_VAL, PISTA, DESC_ORD,PAR_ORD,IMP_ORD,PRIM_ORD, ASC_ORD, MAS,MENOS,POR,DIVISION;
+
+non terminal Object s; //inicio
+non terminal Object instrucciones, instruccion; //instrucciones
+non terminal Object principal, mensaje, reproducir,esperar,sumarizar,longitud,ordenar, def_arreglo,
+lista_def_arreglo, lista_corchetes, def_arreglo_valores, arreglo_lenght; //funciones
+non terminal Object exp, lista_expresiones, continuar, retornar, salir, comodin_retorna, lista_corchetes_asignacion,
+lista_llaves, valores_arreglo, acceso_arreglo, ordenarfun,
+llamada_funcion,incremento_decremento, dec, llamada_funcion_exp, ordenes, sumarizarfun, longitud_exp, sumarizarfun_exp; //varios
+non terminal Object hacer_mientras; //hacer mientras
+non terminal Object mientras; //mientras
+non terminal Object para, asignacion_para; //para
+non terminal Object declaracion_variable, declaracion_funcion, s1, s2,
+lista_parametros,parametro,tipo_dec_variable,tipo_variable_nativa,
+lista_declaraciones, dec_id, variable, def_variables, lista_variables; //declaraciones
+non terminal Object tipo_igual, asignacion; //asignaciones
+non terminal Object switch,lista_casos,caso,default; //switch
+non terminal Object instruccion_si,si,sino,sino_si,lista_sino_si; //si
+non terminal Object definir_pista, add_extender, extender, lista_extiende; //si
+
+//Precedencia
+precedence left NOT;
+precedence left AND, NAND, OR, NOR, XOR;
+precedence left OR, NOR, XOR;
+precedence left IGUAL, DIFERENTE;
+precedence left MAYOR_QUE, MENOR_QUE, MAYOR_IGUAL, MENOR_IGUAL;
+precedence left MAS, MENOS;
+precedence left POR, DIVISION, MOD;
+precedence right POT;
+precedence left INCREMENTO, DECREMENTO;
+precedence left PARENTESIS_A, PARENTESIS_C;
+
+start with s;
+//INICIO
+s ::= definir_pista 
+;
+
+definir_pista ::= add_extender:h1 LLAVE_A instrucciones:h2 LLAVE_C {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); cambiarRaiz(new NodoAST("S",comList,"sus_linea")); :}
+;
+
+add_extender ::= PISTA ID:h1 {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("ADD_EXTENDER", comList, "sus_linea"); :}
+| PISTA ID:h1 extender:h2 {:comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("ADD_EXTENDER", unirArrayList(comList, ((NodoAST)h2).getHijos()), "sus_linea"); :}
+;
+
+extender ::= EXTIENDE ID:h1 lista_extiende:h2 {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("EXTENDER", unirArrayList(comList, ((NodoAST)h2).getHijos()), "sus_linea"); :}
+;
+
+lista_extiende ::= lista_extiende:h1 COMA ID:h2 {: comList=new ArrayList<>(); comList.add(h2); RESULT = new NodoAST("LISTA_EXTIENDE", unirArrayList(comList, ((NodoAST)h1).getHijos()), "sus_linea"); :}
+|                                               {: comList=new ArrayList<>(); RESULT = new NodoAST("LISTA_EXTIENDE", comList, "sus_linea"); :}
+;
+
+instrucciones ::= instrucciones:h1 instruccion:h2  {: RESULT = new NodoAST("INSTRUCCIONES", unirArrayList(((NodoAST)h1).getHijos(), ((NodoAST)h2).getHijos()), "sus_linea"); :}
+| instruccion:h1       {: RESULT = new NodoAST("INSTRUCCIONES", ((NodoAST)h1).getHijos(), "sus_linea"); :}
+;
+
+instruccion ::= declaracion_variable:h1     {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION", comList, "sus_linea"); :}
+| llamada_funcion:h1                        {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}
+| declaracion_funcion:h1                    {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}        
+| asignacion:h1                             {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}        
+| mensaje:h1                                {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}           
+| instruccion_si:h1                         {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}         
+| switch:h1                                 {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}          
+| para:h1                                   {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}                      
+| mientras:h1                               {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}      
+| hacer_mientras:h1                         {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}       
+| continuar:h1                              {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}        
+| reproducir:h1                             {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}    
+| esperar:h1                                {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}               
+| ordenarfun:h1                             {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}       
+| sumarizarfun:h1                           {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}    
+| longitud:h1                               {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}             
+| principal:h1                              {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}          
+| incremento_decremento:h1                  {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}
+| retornar:h1                               {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}       
+| salir:h1                                  {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :} 
+;
+
+retornar ::= RETORNA exp:h1 P_COMA  {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("RETORNAR", comList, "sus_linea"); :}
+| RETORNA P_COMA                    {: comList=new ArrayList<>(); RESULT=new NodoAST("RETORNAR", comList, "sus_linea"); :}
+;
+
+llamada_funcion ::= ID:h1 PARENTESIS_A PARENTESIS_C P_COMA          {: comList=new ArrayList(); comList.add(h1); RESULT=new NodoAST("LLAMADA_FUNCION",comList,"sus_linea"); :}
+| ID:h1 PARENTESIS_A lista_expresiones:h2 PARENTESIS_C P_COMA       {: comList=new ArrayList(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("LLAMADA_FUNCION",comList,"sus_linea"); :}
+;
+
+llamada_funcion_exp ::= ID PARENTESIS_A PARENTESIS_C
+| ID PARENTESIS_A lista_expresiones PARENTESIS_C
+;
+
+principal ::= PRINCIPAL PARENTESIS_A PARENTESIS_C LLAVE_A instrucciones LLAVE_C
+;
+
+exp ::= exp:h1 MAS:h2 exp:h3            {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}   
+| exp:h1 MENOS:h2 exp:h3                {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}                             
+| exp:h1 POR:h2 exp:h3                  {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
+| exp:h1 DIVISION:h2 exp:h3             {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
+| exp:h1 MOD:h2 exp:h3                  {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
+| exp:h1 POT:h2 exp:h3                  {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
+| ID INCREMENTO
+| ID DECREMENTO
+| PARENTESIS_A exp PARENTESIS_C
+| exp:h1 MAYOR_QUE:h2 exp:h3            {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
+| exp:h1 MENOR_QUE:h2 exp:h3            {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
+| exp:h1 MAYOR_IGUAL:h2 exp:h3          {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
+| exp:h1 MENOR_IGUAL:h2 exp:h3          {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
+| exp:h1 IGUAL:h2 exp:h3                {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
+| exp:h1 DIFERENTE:h2 exp:h3            {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
+| IS_NULL exp
+| exp:h1 AND:h2 exp:h3                  {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
+| exp:h1 NAND:h2 exp:h3                 {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
+| exp:h1 OR:h2 exp:h3                   {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
+| exp:h1 NOR:h2 exp:h3                  {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
+| exp:h1 XOR:h2 exp:h3                  {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
+| NOT exp
+| ENTERO_VAL:h1                         {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList<>(); comList2.add(new NodoAST("ENTERO_VAL", comList, "sus_linea")); RESULT = new NodoAST("EXP", comList2, "sus_linea");:}
+| DOBLE_VAL:h1                          {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList<>(); comList2.add(new NodoAST("DOBLE_VAL", comList, "sus_linea")); RESULT = new NodoAST("EXP", comList2, "sus_linea");:}
+| VERDADERO:h1                          {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList<>(); comList2.add(new NodoAST("VERDADERO", comList, "sus_linea")); RESULT = new NodoAST("EXP", comList2, "sus_linea");:}
+| FALSO:h1                              {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList<>(); comList2.add(new NodoAST("FALSO", comList, "sus_linea")); RESULT = new NodoAST("EXP", comList2, "sus_linea");:}
+| CADENA_VAL:h1                         {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList<>(); comList2.add(new NodoAST("CADENA_VAL", comList, "sus_linea")); RESULT = new NodoAST("EXP", comList2, "sus_linea");:}
+| CARACTER_VAL:h1                       {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList<>(); comList2.add(new NodoAST("CARACTER_VAL", comList, "sus_linea")); RESULT = new NodoAST("EXP", comList2, "sus_linea");:}
+| llamada_funcion_exp
+| ID
+| acceso_arreglo
+| longitud_exp
+| sumarizarfun_exp
+;
+
+acceso_arreglo ::= ID lista_corchetes_asignacion
+;
+
+mensaje ::= MENSAJE PARENTESIS_A lista_expresiones:h1 PARENTESIS_C P_COMA {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("MENSAJE",comList,"sus_linea"); :}
+;
+
+lista_expresiones ::= lista_expresiones:h1 COMA exp:h2  {: comList=new ArrayList<>(); comList.add(h2); RESULT=new NodoAST("LISTA_EXPRESIONES",unirArrayList(((NodoAST)h1).getHijos(),comList),"sus_linea"); :}
+| exp:h1                                                {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("LISTA_EXPRESIONES",comList,"sus_linea"); :}
+;
+
+reproducir ::= REPRODUCIR PARENTESIS_A lista_expresiones PARENTESIS_C P_COMA
+;
+
+ordenarfun ::= ORDENAR PARENTESIS_A lista_llaves COMA ordenes PARENTESIS_C P_COMA
+| ORDENAR PARENTESIS_A ID COMA ordenes PARENTESIS_C P_COMA
+;
+
+ordenes ::= ASC_ORD
+|DESC_ORD
+|PAR_ORD
+|IMP_ORD
+|PRIM_ORD
+;
+
+sumarizarfun ::= SUMARIZAR PARENTESIS_A ID PARENTESIS_C P_COMA
+| SUMARIZAR PARENTESIS_A lista_llaves PARENTESIS_C P_COMA
+;
+
+sumarizarfun_exp ::= SUMARIZAR PARENTESIS_A ID PARENTESIS_C 
+| SUMARIZAR PARENTESIS_A lista_llaves PARENTESIS_C 
+;
+
+esperar ::= ESPERAR PARENTESIS_A lista_expresiones PARENTESIS_C P_COMA
+;
+
+sumarizar ::= SUMARIZAR PARENTESIS_A lista_expresiones PARENTESIS_C P_COMA
+;
+
+longitud ::= LONGITUD PARENTESIS_A ID PARENTESIS_C P_COMA
+|  LONGITUD PARENTESIS_A lista_llaves PARENTESIS_C P_COMA 
+|  LONGITUD PARENTESIS_A CADENA_VAL PARENTESIS_C P_COMA
+; 
+
+longitud_exp ::= LONGITUD PARENTESIS_A ID PARENTESIS_C
+|  LONGITUD PARENTESIS_A lista_llaves PARENTESIS_C  
+|  LONGITUD PARENTESIS_A CADENA_VAL PARENTESIS_C 
+; 
+
+ordenar ::= ORDENAR PARENTESIS_A lista_expresiones PARENTESIS_C P_COMA
+;
+
+continuar ::= CONTINUAR 
+;
+
+salir ::= SALIR
+; 
+
+hacer_mientras ::= HACER LLAVE_A instrucciones LLAVE_C MIENTRAS PARENTESIS_A exp PARENTESIS_C P_COMA
+;
+
+mientras ::= MIENTRAS PARENTESIS_A exp PARENTESIS_C LLAVE_A instrucciones LLAVE_C
+;
+
+para ::= PARA PARENTESIS_A declaracion_variable exp P_COMA asignacion_para PARENTESIS_C LLAVE_A instrucciones LLAVE_C
+| PARA PARENTESIS_A asignacion exp P_COMA asignacion_para PARENTESIS_C LLAVE_A instrucciones LLAVE_C
+;
+
+declaracion_variable ::= KEEP:h1 variable:h2    {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("DECLARACION_VARIABLE",comList,"sus_linea");:}
+| variable:h1                                   {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("DECLARACION_VARIABLE",comList,"sus_linea");:} 
+;
+
+variable ::= VAR:h1 tipo_variable_nativa:h2 def_variables:h3    {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT= new NodoAST("VARIABLE", comList,"sus_linea");:}
+| VAR tipo_variable_nativa ARREGLO def_arreglo
+;
+
+def_arreglo ::= ID lista_def_arreglo
+;
+
+lista_def_arreglo ::= lista_corchetes def_arreglo_valores
+| COMA def_arreglo
+| P_COMA
+;
+
+lista_corchetes ::= lista_corchetes CORCHETE_A arreglo_lenght CORCHETE_C
+| CORCHETE_A arreglo_lenght CORCHETE_C
+;
+
+arreglo_lenght ::= exp
+| 
+;
+
+lista_llaves ::= lista_llaves COMA LLAVE_A valores_arreglo LLAVE_C
+| LLAVE_A valores_arreglo LLAVE_C
+;
+
+valores_arreglo ::= lista_expresiones
+| lista_llaves
+|
+;
+
+def_arreglo_valores ::= P_COMA
+| ASIGNACION lista_llaves P_COMA
+;
+
+def_variables ::= ID:h1 lista_variables:h2      {: comList = new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("DEF_VARIABLE", unirArrayList(comList, ((NodoAST)h2).getHijos()), "sus_linea"); :}
+;
+
+lista_variables ::= ASIGNACION exp:h1 P_COMA    {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("LISTA_VARIABLES", comList, "sus_linea"); :}
+| COMA def_variables:h1                         {: RESULT=h1; :}
+| P_COMA                                        {: comList = new ArrayList<>(); RESULT= new NodoAST("LISTA_VARIABLES", comList, "sus_linea"); :}
+;
+
+declaracion_funcion ::= KEEP tipo_variable_nativa ID PARENTESIS_A s1
+| tipo_variable_nativa ID PARENTESIS_A s1
+;
+
+s1 ::= PARENTESIS_C s2
+| lista_parametros PARENTESIS_C s2
+;
+
+s2 ::= LLAVE_A instrucciones LLAVE_C;
+
+lista_parametros ::= lista_parametros COMA parametro
+| parametro
+;
+
+parametro ::= tipo_variable_nativa ID
+;
+
+tipo_variable_nativa ::= ENTERO:h1 {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList(); comList2.add(new NodoAST("ENTERO", comList, "sus_linea")); RESULT= new NodoAST("TIPOS_VARIABLE_NATIVA",comList2,"sus_linea"); :}
+| DOBLE:h1                         {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList(); comList2.add(new NodoAST("DOBLE", comList, "sus_linea")); RESULT= new NodoAST("TIPOS_VARIABLE_NATIVA",comList2,"sus_linea"); :}
+| CARACTER:h1                      {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList(); comList2.add(new NodoAST("CARACTER", comList, "sus_linea")); RESULT= new NodoAST("TIPOS_VARIABLE_NATIVA",comList2,"sus_linea"); :}
+| CADENA:h1                        {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList(); comList2.add(new NodoAST("CADENA", comList, "sus_linea")); RESULT= new NodoAST("TIPOS_VARIABLE_NATIVA",comList2,"sus_linea"); :}
+| BOOLEAN:h1                       {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList(); comList2.add(new NodoAST("BOOLEAN", comList, "sus_linea")); RESULT= new NodoAST("TIPOS_VARIABLE_NATIVA",comList2,"sus_linea"); :}
+;
+
+dec_id ::= ID
+;
+
+tipo_igual ::= ASIGNACION
+| MAS ASIGNACION
+| MENOS ASIGNACION
+;
+
+asignacion_para ::= ID tipo_igual exp 
+|  INCREMENTO
+|  DECREMENTO
+;
+
+
+lista_corchetes_asignacion ::= lista_corchetes_asignacion CORCHETE_A exp CORCHETE_C
+| CORCHETE_A exp CORCHETE_C
+;
+
+asignacion ::= ID:h1 tipo_igual:h2 exp:h3 P_COMA:h4     {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); comList.add(h4); RESULT = new NodoAST("ASIGNACION", comList, "sus_linea"); :}
+|  ID lista_corchetes_asignacion tipo_igual exp P_COMA  
+;
+
+switch ::= SWITCH PARENTESIS_A exp PARENTESIS_C LLAVE_A lista_casos LLAVE_C
+;
+
+lista_casos ::= lista_casos caso
+| caso
+| default
+| lista_casos default
+;
+
+caso ::= CASO exp DOS_PUNTOS instrucciones
+;
+
+default ::= DEFAULT DOS_PUNTOS instrucciones
+;
+
+instruccion_si ::= si
+| si sino
+| si lista_sino_si
+| si lista_sino_si sino
+;
+
+si ::= SI PARENTESIS_A exp PARENTESIS_C LLAVE_A instrucciones LLAVE_C
+;
+
+sino ::= SINO LLAVE_A instrucciones LLAVE_C
+;
+
+sino_si ::= SINO SI PARENTESIS_A exp PARENTESIS_C  LLAVE_A instrucciones LLAVE_C
+;
+
+lista_sino_si ::= lista_sino_si sino_si
+| sino_si
+;
+
+incremento_decremento ::= ID INCREMENTO P_COMA
+| ID DECREMENTO P_COMA
+;
+

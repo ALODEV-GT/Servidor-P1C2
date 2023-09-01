@@ -1,0 +1,8 @@
+
+Pista nuevaPista {
+    Var Cadena num1 = 5;
+    Var Cadena num2 = "hola mundo";
+    Var Cadena num3 = verdadero;
+    Var Cadena num4 = 15.75641;
+    Var Cadena num5 = 'a';
+}
