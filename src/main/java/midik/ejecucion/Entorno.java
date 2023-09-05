@@ -20,7 +20,12 @@ public class Entorno {
     }
 
     public Variable getVariable(String id) {
-        return this.variables.get(id);
+        Variable var = this.variables.get(id);
+        if (var == null && this.padre != null) {
+            return this.padre.getVariable(id);
+        } else {
+            return var;
+        }
     }
 
     public void setFuncion(Funcion funcion) {
@@ -34,7 +39,5 @@ public class Entorno {
     public Map<String, Variable> getVariables() {
         return variables;
     }
-    
-    
 
 }

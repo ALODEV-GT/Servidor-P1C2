@@ -77,4 +77,8 @@ public class Nativo extends Instruccion {
         return cadena;
     }
 
+    public void setValor(Object valor) {
+        this.valor = valor;
+    }
+
 }

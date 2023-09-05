@@ -25,7 +25,7 @@ public class Suma extends Instruccion {
         String valor = null;
 
         if (exp1 == null || exp2 == null) {
-            Errores.getInstance().push(new midik.Singletons.Error("Semantico", this.getLinea(), "No se puede restar null"));
+            Errores.getInstance().push(new midik.Singletons.Error("Semantico", this.getLinea(), "No se puede sumar null"));
             return null;
         }
 

@@ -28,6 +28,12 @@ public class Variable {
         return valor;
     }
 
+    public void setValor(Object valor) {
+        this.valor = valor;
+    }
+    
+    
+
     @Override
     public String toString() {
         return "Variable{" + "id=" + id + ", tipoNativo=" + tipoNativo + ", valor=" + valor + ", reasignable=" + reasignable + ", isKeep=" + isKeep + '}';
