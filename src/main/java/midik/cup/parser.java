@@ -2814,7 +2814,7 @@ class CUP$parser$actions {
 		int h1left = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int h1right = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Object h1 = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("S2",comList,"sus_linea"); 
+		 comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("S1",comList,"sus_linea"); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("s1",40, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -2829,7 +2829,7 @@ class CUP$parser$actions {
 		int h2left = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int h2right = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Object h2 = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("S2",comList,"sus_linea"); 
+		 comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("S1",comList,"sus_linea"); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("s1",40, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

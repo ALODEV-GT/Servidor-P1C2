@@ -32,6 +32,10 @@ public class Variable {
         this.valor = valor;
     }
     
+    public boolean hasTipoAsignado(){
+        return this.tipoNativo != null;
+    }
+    
     
 
     @Override

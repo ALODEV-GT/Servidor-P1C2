@@ -285,8 +285,8 @@ declaracion_funcion ::= KEEP:h1 tipo_variable_nativa:h2 ID:h3 PARENTESIS_A s1:h4
 | tipo_variable_nativa:h1 ID:h2 PARENTESIS_A s1:h3                                  {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT=new NodoAST("DECLARACION_FUNCION",comList,"sus_linea"); :}
 ;
 
-s1 ::= PARENTESIS_C s2:h1                       {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("S2",comList,"sus_linea"); :}
-| lista_parametros:h1 PARENTESIS_C s2:h2        {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("S2",comList,"sus_linea"); :}
+s1 ::= PARENTESIS_C s2:h1                       {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("S1",comList,"sus_linea"); :}
+| lista_parametros:h1 PARENTESIS_C s2:h2        {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("S1",comList,"sus_linea"); :}
 ;
 
 s2 ::= LLAVE_A instrucciones:h1 LLAVE_C {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("S2",comList,"sus_linea"); :}

@@ -11,6 +11,7 @@ import midik.defvariables.TipoNativoVar;
 import midik.instrucciones.AND;
 import midik.instrucciones.Asignacion;
 import midik.instrucciones.ContinuarI;
+import midik.instrucciones.DeclaracionFuncion;
 import midik.instrucciones.DeclaracionVariable;
 import midik.instrucciones.DiferenteQue;
 import midik.instrucciones.Division;
@@ -18,6 +19,7 @@ import midik.instrucciones.HacerMientras;
 import midik.instrucciones.Id;
 import midik.instrucciones.IgualQue;
 import midik.instrucciones.InstruccionSi;
+import midik.instrucciones.LlamadaFuncion;
 import midik.instrucciones.MasMas;
 import midik.instrucciones.MayorIgual;
 import midik.instrucciones.MayorQue;
@@ -68,6 +70,15 @@ public class Ejecucion {
             Variable valor = variables.get(key);
             System.out.println(valor);
         }
+
+        //Impresion de Funciones en el entorno global
+        Map<String, Funcion> funciones = entornoGlobal.getFunciones();
+        Iterator<String> iteratorF = funciones.keySet().iterator();
+        while (iteratorF.hasNext()) {
+            String key = iteratorF.next();
+            Funcion valor = funciones.get(key);
+            System.out.println(valor);
+        }
     }
 
     public Object recorrer(Object nodo) {
@@ -84,6 +95,102 @@ public class Ejecucion {
                 instrucciones.add(inst);
             }
             return instrucciones;
+        }
+
+        //LLAMADA_FUNCION
+        if (this.soyNodo("LLAMADA_FUNCION", nodo)) {
+            NodoAST nodoA = (NodoAST) nodo;
+            String id = (String) nodoA.getHijos().get(0);
+            switch (nodoA.getHijos().size()) {
+                case 1:
+                    return new LlamadaFuncion(nodoA.getLinea(), id, null);
+                case 2:
+                    Object listaExpresiones = this.recorrer(nodoA.getHijos().get(1));
+                    return new LlamadaFuncion(nodoA.getLinea(), id, listaExpresiones);
+            }
+        }
+
+        //DECLARACION_FUNCION
+        if (this.soyNodo("DECLARACION_FUNCION", nodo)) {
+            NodoAST nodoA = (NodoAST) nodo;
+            switch (nodoA.getHijos().size()) {
+                case 4: {
+                    TipoNativoVar tipo = (TipoNativoVar) this.recorrer(nodoA.getHijos().get(1));
+                    String id = (String) nodoA.getHijos().get(2);
+                    ArrayList<Object> miembros = (ArrayList<Object>) this.recorrer(nodoA.getHijos().get(3));
+                    switch (miembros.size()) {
+                        case 1: {
+                            Object instrucciones = miembros.get(0);
+                            return new DeclaracionFuncion(nodoA.getLinea(), id, instrucciones, tipo.getTipo(), null);
+                        }
+                        case 2: {
+                            Object parametros = miembros.get(0);
+                            Object instrucciones = miembros.get(1);
+                            return new DeclaracionFuncion(nodoA.getLinea(), id, instrucciones, tipo.getTipo(), parametros);
+                        }
+                    }
+                }
+                case 3: {
+                    TipoNativoVar tipo = (TipoNativoVar) this.recorrer(nodoA.getHijos().get(0));
+                    String id = (String) nodoA.getHijos().get(1);
+                    ArrayList<Object> miembros = (ArrayList<Object>) this.recorrer(nodoA.getHijos().get(2));
+                    switch (miembros.size()) {
+                        case 1: {
+                            Object instrucciones = miembros.get(0);
+                            return new DeclaracionFuncion(nodoA.getLinea(), id, instrucciones, tipo.getTipo(), null);
+                        }
+                        case 2: {
+                            Object parametros = miembros.get(0);
+                            Object instrucciones = miembros.get(1);
+                            return new DeclaracionFuncion(nodoA.getLinea(), id, instrucciones, tipo.getTipo(), parametros);
+                        }
+                    }
+                }
+            }
+        }
+        //S1
+        if (this.soyNodo("S1", nodo)) {
+            NodoAST nodoA = (NodoAST) nodo;
+            ArrayList<Object> miembros = new ArrayList<>();
+            switch (nodoA.getHijos().size()) {
+                case 1: {
+                    Object instrucciones = this.recorrer(nodoA.getHijos().get(0));
+                    miembros.add(instrucciones);
+                    return miembros;
+                }
+                case 2: {
+                    Object parametros = this.recorrer(nodoA.getHijos().get(0));
+                    Object instrucciones = this.recorrer(nodoA.getHijos().get(1));
+                    miembros.add(parametros);
+                    miembros.add(instrucciones);
+                    return miembros;
+                }
+            }
+        }
+
+        //S2
+        if (this.soyNodo("S2", nodo)) {
+            NodoAST nodoA = (NodoAST) nodo;
+            return this.recorrer(nodoA.getHijos().get(0));
+        }
+
+        //LISTA_PARAMETROS
+        if (this.soyNodo("LISTA_PARAMETROS", nodo)) {
+            NodoAST nodoA = (NodoAST) nodo;
+            ArrayList<Object> parametros = new ArrayList<>();
+            for (Object h : nodoA.getHijos()) {
+                Object parametro = this.recorrer(h);
+                parametros.add(parametro);
+            }
+            return parametros;
+        }
+
+        //PARAMETRO
+        if (this.soyNodo("PARAMETRO", nodo)) {
+            NodoAST nodoA = (NodoAST) nodo;
+            TipoNativoVar tipo = (TipoNativoVar) this.recorrer(nodoA.getHijos().get(0));
+            String id = (String) nodoA.getHijos().get(1);
+            return new Variable(id, tipo.getTipo(), null, Boolean.TRUE, Boolean.FALSE);
         }
 
         //SALIR

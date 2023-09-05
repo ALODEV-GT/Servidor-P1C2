@@ -32,4 +32,25 @@ public class Funcion {
         return listaParametros;
     }
 
+    public int getParametrosSize() {
+        if (this.listaParametros != null) {
+            return this.listaParametros.size();
+        } else {
+            return 0;
+        }
+    }
+
+    public boolean hasRetorno() {
+        return this.tipoNativo != null;
+    }
+
+    public boolean hasParametros() {
+        return this.listaParametros != null;
+    }
+
+    @Override
+    public String toString() {
+        return "Funcion{" + "id=" + id + ", instrucciones=" + instrucciones + ", tipoNativo=" + tipoNativo + ", listaParametros=" + listaParametros + '}';
+    }
+
 }

@@ -1,14 +1,9 @@
 
 Pista nuevaPista {
-Var Entero i = 0;   
-Hacer{
-    Mensaje("Hola" + i);
-    i++;
-    Continuar
-    Mensaje("Siuuuuuuuuuu000");
-    Mensaje("Siuuuuuuuuuu111");
-    Mensaje("Siuuuuuuuuuu222");
-}Mientras(i < 10);
-
+    Entero saludo(Entero edad, Cadena nombre){
+        Mensaje("Hola " + nombre + " tienes " + edad + "anhos");
+        Retorna 5;    
 }
 
+   saludo(15, "Brayan");
+}

@@ -33,11 +33,26 @@ public class Entorno {
     }
 
     public Funcion getFuncion(String id) {
-        return this.funciones.get(id);
+        Funcion fun = this.funciones.get(id);
+        if (fun == null && this.padre != null) {
+            return this.padre.getFuncion(id);
+        } else {
+            return fun;
+        }
     }
 
     public Map<String, Variable> getVariables() {
         return variables;
     }
+
+    public Map<String, Funcion> getFunciones() {
+        return funciones;
+    }
+
+    public void setVariables(Map<String, Variable> variables) {
+        this.variables = variables;
+    }
+    
+    
 
 }
