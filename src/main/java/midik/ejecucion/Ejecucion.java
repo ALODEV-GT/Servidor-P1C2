@@ -11,6 +11,7 @@ import midik.defvariables.TipoNativoVar;
 import midik.instrucciones.AND;
 import midik.instrucciones.Asignacion;
 import midik.instrucciones.ContinuarI;
+import midik.instrucciones.DeclaracionArreglo;
 import midik.instrucciones.DeclaracionFuncion;
 import midik.instrucciones.DeclaracionVariable;
 import midik.instrucciones.DiferenteQue;
@@ -79,6 +80,15 @@ public class Ejecucion {
             Funcion valor = funciones.get(key);
             System.out.println(valor);
         }
+        
+         //Impresion de Arreglos en el entorno global
+        Map<String, Arreglo> arreglos = entornoGlobal.getArreglos();
+        Iterator<String> iteratorA = arreglos.keySet().iterator();
+        while (iteratorA.hasNext()) {
+            String key = iteratorA.next();
+            Arreglo valor = arreglos.get(key);
+            System.out.println(valor);
+        }
     }
 
     public Object recorrer(Object nodo) {
@@ -107,6 +117,83 @@ public class Ejecucion {
                 case 2:
                     Object listaExpresiones = this.recorrer(nodoA.getHijos().get(1));
                     return new LlamadaFuncion(nodoA.getLinea(), id, listaExpresiones);
+            }
+        }
+
+        //DEF_ARREGLO
+        if (this.soyNodo("DEF_ARREGLO", nodo)) {
+            NodoAST nodoA = (NodoAST) nodo;
+            int hijosSize = nodoA.getHijos().size();
+            ArrayList<String> ids = new ArrayList<>();
+            ArrayList<Object> miembros = new ArrayList<>();
+            for (int i = 0; i < hijosSize - 2; i++) {
+                ids.add((String) nodoA.getHijos().get(i));
+            }
+            Object longitudes = this.recorrer(nodoA.getHijos().get(hijosSize - 2));
+            Object valores = this.recorrer(nodoA.getHijos().get(hijosSize - 1));
+            miembros.add(ids);
+            miembros.add(longitudes);
+            miembros.add(valores);
+            return miembros;
+        }
+
+        //LISTA_DEF_ARREGLO
+        if (this.soyNodo("LISTA_DEF_ARREGLO", nodo)) {
+            int hola = 1;
+            System.out.println("");
+        }
+
+        //LISTA_CORCHETES
+        if (this.soyNodo("LISTA_CORCHETES", nodo)) {
+            NodoAST nodoA = (NodoAST) nodo;
+            ArrayList<Object> longitudes = new ArrayList<>();
+            for (Object h : nodoA.getHijos()) {
+                longitudes.add(this.recorrer(h));
+            }
+            return longitudes;
+        }
+
+        //ARREGLO_LENGHT
+        if (this.soyNodo("ARREGLO_LENGHT", nodo)) {
+            NodoAST nodoA = (NodoAST) nodo;
+            switch (nodoA.getHijos().size()) {
+                case 0: //Sin definir la longitud []
+                    return null;
+                case 1:
+                    return this.recorrer(nodoA.getHijos().get(0));
+            }
+        }
+
+        //DEF_ARREGLO_VALORES
+        if (this.soyNodo("DEF_ARREGLO_VALORES", nodo)) {
+            NodoAST nodoA = (NodoAST) nodo;
+            switch (nodoA.getHijos().size()) {
+                case 0:
+                    return null;
+                case 1:
+                    return this.recorrer(nodoA.getHijos().get(0));
+            }
+
+        }
+        //LISTA_LLAVES
+        if (this.soyNodo("LISTA_LLAVES", nodo)) {
+            NodoAST nodoA = (NodoAST) nodo;
+            ArrayList<Object> lista = new ArrayList<>();
+            for (Object h : nodoA.getHijos()) {
+                lista.add(this.recorrer(h));
+            }
+            return lista;
+        }
+
+        //VALORES_ARREGLO
+        if (this.soyNodo("VALORES_ARREGLO", nodo)) {
+            NodoAST nodoA = (NodoAST) nodo;
+            ArrayList<Object> lista = new ArrayList<>();
+            switch (nodoA.getHijos().size()) {
+                case 0: //Arreglo vacio {}
+                    return lista;
+                case 1: //Arreglo {LISTA_EXPRESIONES}
+                    return this.recorrer(nodoA.getHijos().get(0));
             }
         }
 
@@ -444,12 +531,21 @@ public class Ejecucion {
             ArrayList<Object> listaMiembros = (ArrayList<Object>) miembros;
             String reasignable = (String) listaMiembros.get(0);
             TipoNativoVar tipo = (TipoNativoVar) listaMiembros.get(1);
-            ListaVars listaVars = (ListaVars) listaMiembros.get(2);
-
             boolean isReasignable = reasignable.equals("Var");
+            switch (listaMiembros.size()) {
+                case 3:
+                    ListaVars listaVars = (ListaVars) listaMiembros.get(2);
+                    DeclaracionVariable dv = new DeclaracionVariable(nodoA.getLinea(), tipo, listaVars.getVariables(), listaVars.getExpresion(), isReasignable, hasKeep);
+                    return dv;
+                case 4:
+                    ArrayList<Object> miembrosArr = (ArrayList<Object>) listaMiembros.get(3);
+                    Object ids = miembrosArr.get(0);
+                    Object dimensiones = miembrosArr.get(1);
+                    Object estructura = miembrosArr.get(2);
+                    DeclaracionArreglo da = new DeclaracionArreglo(nodoA.getLinea(), tipo, ids, dimensiones, estructura, isReasignable, hasKeep);
+                    return da;
+            }
 
-            DeclaracionVariable dv = new DeclaracionVariable(nodoA.getLinea(), tipo, listaVars.getVariables(), listaVars.getExpresion(), isReasignable, hasKeep);
-            return dv;
         }
 
         //DEF_VARIABLE
@@ -476,14 +572,31 @@ public class Ejecucion {
         if (this.soyNodo(
                 "VARIABLE", nodo)) {
             NodoAST nodoA = (NodoAST) nodo;
-            ArrayList<Object> hijos = nodoA.getHijos();
-            ArrayList<Object> lista = new ArrayList<>();
-            Object tipo = this.recorrer(hijos.get(1));
-            Object variables = this.recorrer(hijos.get(2));
-            lista.add(hijos.get(0));
-            lista.add(tipo);
-            lista.add(variables);
-            return lista;
+            switch (nodoA.getHijos().size()) {
+                case 3: {
+                    ArrayList<Object> hijos = nodoA.getHijos();
+                    ArrayList<Object> lista = new ArrayList<>();
+                    Object tipo = this.recorrer(hijos.get(1));
+                    Object variables = this.recorrer(hijos.get(2));
+                    lista.add(hijos.get(0));
+                    lista.add(tipo);
+                    lista.add(variables);
+                    return lista;
+                }
+                case 4: {
+                    ArrayList<Object> hijos = nodoA.getHijos();
+                    ArrayList<Object> lista = new ArrayList<>();
+                    Object tipo = this.recorrer(hijos.get(1));
+                    Object defArreglo = this.recorrer(hijos.get(3));
+                    lista.add(hijos.get(0));
+                    lista.add(tipo);
+                    lista.add(hijos.get(2));
+                    lista.add(defArreglo);
+                    return lista;
+                }
+
+            }
+
         }
 
         //TIPOS_VARIABLE_NATIVA

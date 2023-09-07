@@ -1,9 +1,19 @@
 
 Pista nuevaPista {
-    Entero saludo(Entero edad, Cadena nombre){
-        Mensaje("Hola " + nombre + " tienes " + edad + "anhos");
-        Retorna 5;    
-}
 
-   saludo(15, "Brayan");
+    Var Entero Arreglo arr2 []={1,2,3,4,5,6};
+    Var Entero Arreglo arr3 [6];
+    <--Var Entero Arreglo arr1 [4][4];
+    Var Entero Arreglo arr2 []={1,2,3,4,5,6};
+    Var Entero Arreglo arr4, arr5, arr6 [5][5];
+    Var Entero Arreglo arr7, arr8, arr9  [][]={{1,2,3},{1,2,3},{1,2,3}};
+    Var Entero Arreglo arr10 [][][]= {{{1+1,2,3},{1,2,3},{1,2,3}},{{1,2,3},{1,2,3},{1,2,3}},{{1,2,3},{1,2,3},{1,2,12.52}}};
+    Var Entero Arreglo arr11[]={};
+-->
+<--
+    Var Entero Arreglo arr1[];
+    Var Entero Arreglo arr2[5]={1,2,3};
+    Var Entero Arreglo arr3 [5][8];
+    Var Entero Arreglo arr4 [][]={1,2,3,4,5,6};
+-->
 }

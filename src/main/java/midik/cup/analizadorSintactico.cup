@@ -52,7 +52,7 @@ non terminal Object principal, mensaje, reproducir,esperar,sumarizar,longitud,or
 lista_def_arreglo, lista_corchetes, def_arreglo_valores, arreglo_lenght; //funciones
 non terminal Object exp, lista_expresiones, continuar, retornar, salir, comodin_retorna, lista_corchetes_asignacion,
 lista_llaves, valores_arreglo, acceso_arreglo, ordenarfun,
-llamada_funcion,incremento_decremento, dec, llamada_funcion_exp, ordenes, sumarizarfun, longitud_exp, sumarizarfun_exp; //varios
+llamada_funcion, dec, llamada_funcion_exp, ordenes, sumarizarfun, longitud_exp, sumarizarfun_exp; //varios
 non terminal Object hacer_mientras; //hacer mientras
 non terminal Object mientras; //mientras
 non terminal Object para, asignacion_para; //para
@@ -116,7 +116,6 @@ instruccion ::= declaracion_variable:h1     {: comList=new ArrayList<>(); comLis
 | sumarizarfun:h1                           {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}    
 | longitud:h1                               {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}             
 | principal:h1                              {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}          
-| incremento_decremento:h1                  {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}
 | retornar:h1                               {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}       
 | salir:h1                                  {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :} 
 ;
@@ -241,36 +240,35 @@ declaracion_variable ::= KEEP:h1 variable:h2    {: comList=new ArrayList<>(); co
 ;
 
 variable ::= VAR:h1 tipo_variable_nativa:h2 def_variables:h3    {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT= new NodoAST("VARIABLE", comList,"sus_linea");:}
-| VAR tipo_variable_nativa ARREGLO def_arreglo
+| VAR:h1 tipo_variable_nativa:h2 ARREGLO:h3 def_arreglo:h4  {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); comList.add(h4); RESULT= new NodoAST("VARIABLE", comList,"sus_linea");:}
 ;
 
-def_arreglo ::= ID lista_def_arreglo
+def_arreglo ::= ID:h1 lista_def_arreglo:h2 {: comList = new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("DEF_ARREGLO", unirArrayList(comList, ((NodoAST)h2).getHijos()), "sus_linea"); :}
 ;
 
-lista_def_arreglo ::= lista_corchetes def_arreglo_valores
-| COMA def_arreglo
-| P_COMA
+lista_def_arreglo ::= lista_corchetes:h1 def_arreglo_valores:h2   {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT = new NodoAST("LISTA_DEF_ARREGLO", comList, "sus_linea"); :}
+| COMA def_arreglo:h1  {: RESULT=h1; :}
 ;
 
-lista_corchetes ::= lista_corchetes CORCHETE_A arreglo_lenght CORCHETE_C
-| CORCHETE_A arreglo_lenght CORCHETE_C
+lista_corchetes ::= lista_corchetes:h1 CORCHETE_A arreglo_lenght:h2 CORCHETE_C {: comList=new ArrayList<>(); comList.add(h2); RESULT = new NodoAST("LISTA_CORCHETES", unirArrayList(((NodoAST)h1).getHijos(), comList), "sus_linea"); :}
+| CORCHETE_A arreglo_lenght:h1 CORCHETE_C {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("LISTA_CORCHETES",comList,"sus_linea"); :}
 ;
 
-arreglo_lenght ::= exp
-| 
+arreglo_lenght ::= exp:h1   {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("ARREGLO_LENGHT",comList,"sus_linea"); :}
+|                           {: comList=new ArrayList<>(); RESULT=new NodoAST("ARREGLO_LENGHT",comList,"sus_linea"); :}
 ;
 
-lista_llaves ::= lista_llaves COMA LLAVE_A valores_arreglo LLAVE_C
-| LLAVE_A valores_arreglo LLAVE_C
+def_arreglo_valores ::= P_COMA              {: comList=new ArrayList<>(); RESULT = new NodoAST("DEF_ARREGLO_VALORES", comList, "sus_linea"); :}   
+| ASIGNACION lista_llaves:h1 P_COMA         {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("DEF_ARREGLO_VALORES", comList, "sus_linea"); :}       
 ;
 
-valores_arreglo ::= lista_expresiones
-| lista_llaves
-|
+lista_llaves ::= lista_llaves:h1 COMA LLAVE_A valores_arreglo:h2 LLAVE_C {: comList=new ArrayList<>(); comList.add(h2); RESULT = new NodoAST("LISTA_LLAVES", unirArrayList(((NodoAST)h1).getHijos(), comList), "sus_linea"); :}
+| LLAVE_A valores_arreglo:h1 LLAVE_C    {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("LISTA_LLAVES",comList,"sus_linea"); :}
 ;
 
-def_arreglo_valores ::= P_COMA
-| ASIGNACION lista_llaves P_COMA
+valores_arreglo ::= lista_expresiones:h1   {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("VALORES_ARREGLO", comList, "sus_linea"); :}
+| lista_llaves:h1  {: RESULT=h1; :}
+|   {: comList=new ArrayList<>(); RESULT = new NodoAST("VALORES_ARREGLO", comList, "sus_linea"); :}
 ;
 
 def_variables ::= ID:h1 lista_variables:h2      {: comList = new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("DEF_VARIABLE", unirArrayList(comList, ((NodoAST)h2).getHijos()), "sus_linea"); :}
