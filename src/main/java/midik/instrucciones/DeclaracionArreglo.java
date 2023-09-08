@@ -75,6 +75,22 @@ public class DeclaracionArreglo extends Instruccion {
                 return null;
             }
         } else {
+            for (Object h : this.dimensiones) {
+                Nativo exp = (Nativo) ((Instruccion) h).ejecutar(entorno);
+                //Validar que los indices sean de tipo entero
+                if (exp.getTipo() != TipoNativo.ENTERO) {
+                    Errores.getInstance().push(new midik.Singletons.Error("Semantico", this.getLinea(), "Las longitudes deben ser de tipo entero."));
+                    return null;
+                } else {
+                    //Validar que los indices sean mayor a 0
+                    Integer valor = Integer.valueOf((String) exp.getValor());
+                    if (valor < 1) {
+                        Errores.getInstance().push(new midik.Singletons.Error("Semantico", this.getLinea(), "Las longitudes/longitud debe ser mayor a 0."));
+                        return null;
+                    }
+                }
+            }
+
             //Validar que las longitudes declaradas sean iguales
             if (!this.sonLasLongitudesDeclaradasIguales(this.dimensiones)) {
                 Errores.getInstance().push(new midik.Singletons.Error("Semantico ", this.getLinea(), "Todas las longitudes en cada dimension deben ser iguales."));

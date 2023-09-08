@@ -1,9 +1,16 @@
 
 Pista nuevaPista {
+    Var Entero Arreglo miArreglo [][][]= {{{0,1,2},{3,4,5},{6,7,8}},{{9,10,11},{12,13,14},{15,16,17}},{{18,19,20},{21,22,23},{24,25,26}}};
+    Var Entero numero = miArreglo[1][1][1];
+    Var Entero num1 = 5;
+    num1 = 1000;
+    miArreglo[1][1][1] = 12345;
+    
 
+ <--
     Var Entero Arreglo arr2 []={1,2,3,4,5,6};
     Var Entero Arreglo arr3 [6];
-    <--Var Entero Arreglo arr1 [4][4];
+   Var Entero Arreglo arr1 [4][4];
     Var Entero Arreglo arr2 []={1,2,3,4,5,6};
     Var Entero Arreglo arr4, arr5, arr6 [5][5];
     Var Entero Arreglo arr7, arr8, arr9  [][]={{1,2,3},{1,2,3},{1,2,3}};

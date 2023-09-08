@@ -163,12 +163,12 @@ exp ::= exp:h1 MAS:h2 exp:h3            {: comList=new ArrayList<>(); comList.ad
 | CARACTER_VAL:h1                       {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList<>(); comList2.add(new NodoAST("CARACTER_VAL", comList, "sus_linea")); RESULT = new NodoAST("EXP", comList2, "sus_linea");:}
 | llamada_funcion_exp
 | ID:h1                                 {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList<>(); comList2.add(new NodoAST("ID", comList, "sus_linea")); RESULT = new NodoAST("EXP", comList2, "sus_linea");:}
-| acceso_arreglo
+| acceso_arreglo:h1                     {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
 | longitud_exp
 | sumarizarfun_exp
 ;
 
-acceso_arreglo ::= ID lista_corchetes_asignacion
+acceso_arreglo ::= ID:h1 lista_corchetes_asignacion:h2 {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("ACCESO_ARREGLO",comList,"sus_linea"); :}
 ;
 
 mensaje ::= MENSAJE PARENTESIS_A lista_expresiones:h1 PARENTESIS_C P_COMA {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("MENSAJE",comList,"sus_linea"); :}
@@ -318,12 +318,12 @@ asignacion_para ::= ID:h1 tipo_igual:h2 exp:h3      {: comList=new ArrayList<>()
 ;
 
 
-lista_corchetes_asignacion ::= lista_corchetes_asignacion CORCHETE_A exp CORCHETE_C
-| CORCHETE_A exp CORCHETE_C
+lista_corchetes_asignacion ::= lista_corchetes_asignacion:h1 CORCHETE_A exp:h2 CORCHETE_C {: comList=new ArrayList<>(); comList.add(h2); RESULT = new NodoAST("LISTA_CORCHETES_ASIGNACION", unirArrayList(((NodoAST)h1).getHijos(), comList), "sus_linea"); :}
+| CORCHETE_A exp:h1 CORCHETE_C {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("LISTA_CORCHETES_ASIGNACION",comList,"sus_linea"); :}
 ;
 
 asignacion ::= ID:h1 tipo_igual:h2 exp:h3 P_COMA     {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("ASIGNACION", comList, "sus_linea"); :}
-|  ID lista_corchetes_asignacion tipo_igual exp P_COMA
+|  ID:h1 lista_corchetes_asignacion:h2 tipo_igual:h3 exp:h4 P_COMA  {:comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); comList.add(h4); RESULT = new NodoAST("ASIGNACION", comList, "sus_linea");:}
 |  ID:h1 INCREMENTO:h2 P_COMA                              {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2);  RESULT = new NodoAST("ASIGNACION", comList, "sus_linea");:}
 |  ID:h1 DECREMENTO:h2 P_COMA                              {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2);  RESULT = new NodoAST("ASIGNACION", comList, "sus_linea");:}
 ;

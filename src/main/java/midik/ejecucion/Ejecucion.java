@@ -9,6 +9,7 @@ import midik.defvariables.TipoIgual;
 import midik.defvariables.TipoIgualVar;
 import midik.defvariables.TipoNativoVar;
 import midik.instrucciones.AND;
+import midik.instrucciones.AccesoArreglo;
 import midik.instrucciones.Asignacion;
 import midik.instrucciones.ContinuarI;
 import midik.instrucciones.DeclaracionArreglo;
@@ -80,8 +81,8 @@ public class Ejecucion {
             Funcion valor = funciones.get(key);
             System.out.println(valor);
         }
-        
-         //Impresion de Arreglos en el entorno global
+
+        //Impresion de Arreglos en el entorno global
         Map<String, Arreglo> arreglos = entornoGlobal.getArreglos();
         Iterator<String> iteratorA = arreglos.keySet().iterator();
         while (iteratorA.hasNext()) {
@@ -105,6 +106,26 @@ public class Ejecucion {
                 instrucciones.add(inst);
             }
             return instrucciones;
+        }
+
+        //ACCESO_ARREGLO
+        if (this.soyNodo("ACCESO_ARREGLO", nodo)) {
+            NodoAST nodoA = (NodoAST) nodo;
+            String id = (String) nodoA.getHijos().get(0);
+            Object indices = this.recorrer(nodoA.getHijos().get(1));
+            return new AccesoArreglo(nodoA.getLinea(), id, indices);
+        }
+
+        //LISTA_CORCHETES_ASIGNACION
+        if (this.soyNodo("LISTA_CORCHETES_ASIGNACION", nodo)) {
+            NodoAST nodoA = (NodoAST) nodo;
+            ArrayList<Object> lista = new ArrayList<>();
+
+            for (Object h : nodoA.getHijos()) {
+                Object resp = this.recorrer(h);
+                lista.add(resp);
+            }
+            return lista;
         }
 
         //LLAMADA_FUNCION
@@ -341,11 +362,18 @@ public class Ejecucion {
             String id = (String) nodoA.getHijos().get(0);
 
             switch (nodoA.getHijos().size()) {
-                case 3:
+                case 4: {
+                    Object indices = this.recorrer(nodoA.getHijos().get(1));
+                    TipoIgualVar tipoIgual = (TipoIgualVar) this.recorrer(nodoA.getHijos().get(2));
+                    Instruccion expresion = (Instruccion) this.recorrer(nodoA.getHijos().get(3));
+                    return new Asignacion(nodoA.getLinea(), id, indices, tipoIgual.getTipoIgual(), expresion);
+                }
+                case 3: {
                     TipoIgualVar tipoIgual = (TipoIgualVar) this.recorrer(nodoA.getHijos().get(1));
                     Instruccion expresion = (Instruccion) this.recorrer(nodoA.getHijos().get(2));
                     return new Asignacion(nodoA.getLinea(), id, tipoIgual.getTipoIgual(), expresion);
-                case 2:
+                }
+                case 2: {
                     if (((String) nodoA.getHijos().get(1)).equals("++")) {
                         Instruccion expresionPP = new MasMas(nodoA.getLinea(), id);
                         return new Asignacion(nodoA.getLinea(), id, TipoIgual.ASIGNACION, expresionPP);
@@ -355,6 +383,7 @@ public class Ejecucion {
                         Instruccion expresionMM = new MenosMenos(nodoA.getLinea(), id);
                         return new Asignacion(nodoA.getLinea(), id, TipoIgual.ASIGNACION, expresionMM);
                     }
+                }
             }
         }
 

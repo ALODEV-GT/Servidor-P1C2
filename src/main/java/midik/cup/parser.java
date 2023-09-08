@@ -2146,7 +2146,10 @@ class CUP$parser$actions {
           case 64: // exp ::= acceso_arreglo 
             {
               Object RESULT =null;
-
+		int h1left = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
+		int h1right = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
+		Object h1 = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		 comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("EXP", comList, "sus_linea"); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("exp",15, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -2173,7 +2176,13 @@ class CUP$parser$actions {
           case 67: // acceso_arreglo ::= ID lista_corchetes_asignacion 
             {
               Object RESULT =null;
-
+		int h1left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
+		int h1right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
+		String h1 = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+		int h2left = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
+		int h2right = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
+		Object h2 = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		 comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("ACCESO_ARREGLO",comList,"sus_linea"); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("acceso_arreglo",24, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -3073,7 +3082,13 @@ class CUP$parser$actions {
           case 140: // lista_corchetes_asignacion ::= lista_corchetes_asignacion CORCHETE_A exp CORCHETE_C 
             {
               Object RESULT =null;
-
+		int h1left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).left;
+		int h1right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).right;
+		Object h1 = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
+		int h2left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
+		int h2right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
+		Object h2 = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+		 comList=new ArrayList<>(); comList.add(h2); RESULT = new NodoAST("LISTA_CORCHETES_ASIGNACION", unirArrayList(((NodoAST)h1).getHijos(), comList), "sus_linea"); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("lista_corchetes_asignacion",21, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -3082,7 +3097,10 @@ class CUP$parser$actions {
           case 141: // lista_corchetes_asignacion ::= CORCHETE_A exp CORCHETE_C 
             {
               Object RESULT =null;
-
+		int h1left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
+		int h1right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
+		Object h1 = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+		 comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("LISTA_CORCHETES_ASIGNACION",comList,"sus_linea"); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("lista_corchetes_asignacion",21, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -3109,7 +3127,19 @@ class CUP$parser$actions {
           case 143: // asignacion ::= ID lista_corchetes_asignacion tipo_igual exp P_COMA 
             {
               Object RESULT =null;
-
+		int h1left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).left;
+		int h1right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).right;
+		String h1 = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-4)).value;
+		int h2left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).left;
+		int h2right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).right;
+		Object h2 = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
+		int h3left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
+		int h3right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
+		Object h3 = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		int h4left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
+		int h4right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
+		Object h4 = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+		comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); comList.add(h4); RESULT = new NodoAST("ASIGNACION", comList, "sus_linea");
               CUP$parser$result = parser.getSymbolFactory().newSymbol("asignacion",51, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
