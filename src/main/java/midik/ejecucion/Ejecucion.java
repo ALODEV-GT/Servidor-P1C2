@@ -38,6 +38,7 @@ import midik.instrucciones.Multiplicacion;
 import midik.instrucciones.NAND;
 import midik.instrucciones.NOR;
 import midik.instrucciones.OR;
+import midik.instrucciones.Ordenar;
 import midik.instrucciones.Para;
 import midik.instrucciones.Potencia;
 import midik.instrucciones.Reproducir;
@@ -45,6 +46,7 @@ import midik.instrucciones.Resta;
 import midik.instrucciones.RetornarI;
 import midik.instrucciones.SalirI;
 import midik.instrucciones.Suma;
+import midik.instrucciones.Sumarizar;
 import midik.instrucciones.Switch;
 import midik.instrucciones.XOR;
 import midik.miembroSi.Caso;
@@ -98,7 +100,6 @@ public class Ejecucion {
         }
 
         //Ejecucion de musica
-        
         Map<Integer, Canal> canales = CentroCanales.getInstance().getCanales();
         Iterator<Integer> interatorC = canales.keySet().iterator();
         while (interatorC.hasNext()) {
@@ -109,18 +110,14 @@ public class Ejecucion {
             CentroCanalesThread.getInstance().agregarCanalThread(nuevoCanal);
         }
         CentroCanalesThread.getInstance().reproducirCanales();
-        
-        
-        
-        
-       /* int[] notes = {60, 62, 64, 65, 67, 69, 71, 72};  // Números MIDI para notas
+
+        /* int[] notes = {60, 62, 64, 65, 67, 69, 71, 72};  // Números MIDI para notas
         long[] durations = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};  // Duraciones en milisegundos para cada nota
 
         CanalThread nuevoCanal = new CanalThread();
         nuevoCanal.agregarMusica(notes, durations);
         CentroCanalesThread.getInstance().agregarCanalThread(nuevoCanal);
         CentroCanalesThread.getInstance().reproducirCanales();*/
-
     }
 
     public Object recorrer(Object nodo) {
@@ -138,7 +135,43 @@ public class Ejecucion {
             }
             return instrucciones;
         }
-        
+
+        //SUMARIZARFUN
+        if (this.soyNodo("SUMARIZARFUN", nodo)) {
+            NodoAST nodoA = (NodoAST) nodo;
+            Object id = nodoA.getHijos().get(0);
+            return new Sumarizar(nodoA.getLinea(), id);
+        }
+
+        //SUMARIZARFUN_EXP
+        if (this.soyNodo("SUMARIZARFUN_EXP", nodo)) {
+            NodoAST nodoA = (NodoAST) nodo;
+            Object id = nodoA.getHijos().get(0);
+            return new Sumarizar(nodoA.getLinea(), id);
+        }
+
+        //ORDENAR
+        if (this.soyNodo("ORDENAR", nodo)) {
+            NodoAST nodoA = (NodoAST) nodo;
+            Object id = nodoA.getHijos().get(0);
+            Object tipoOrden = this.recorrer(nodoA.getHijos().get(1));
+            return new Ordenar(nodoA.getLinea(), id, tipoOrden);
+        }
+
+        //ORDENAR_EXP
+        if (this.soyNodo("ORDENAR_EXP", nodo)) {
+            NodoAST nodoA = (NodoAST) nodo;
+            Object id = nodoA.getHijos().get(0);
+            Object tipoOrden = this.recorrer(nodoA.getHijos().get(1));
+            return new Ordenar(nodoA.getLinea(), id, tipoOrden);
+        }
+
+        //ORDENES
+        if (this.soyNodo("ORDENES", nodo)) {
+            NodoAST nodoA = (NodoAST) nodo;
+            return nodoA.getHijos().get(0);
+        }
+
         //ESPERAR
         if (this.soyNodo("ESPERAR", nodo)) {
             NodoAST nodoA = (NodoAST) nodo;

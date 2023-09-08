@@ -49,7 +49,7 @@ VERDADERO,FALSO, CARACTER_VAL, PISTA, DESC_ORD,PAR_ORD,IMP_ORD,PRIM_ORD, ASC_ORD
 non terminal Object s; //inicio
 non terminal Object instrucciones, instruccion; //instrucciones
 non terminal Object principal, mensaje, reproducir,reproducir_exp,esperar,sumarizar,longitud,ordenar, def_arreglo,
-lista_def_arreglo, lista_corchetes, def_arreglo_valores, arreglo_lenght; //funciones
+lista_def_arreglo, lista_corchetes, def_arreglo_valores, arreglo_lenght, ordenar_exp; //funciones
 non terminal Object exp, lista_expresiones, continuar, retornar, salir, comodin_retorna, lista_corchetes_asignacion,
 lista_llaves, valores_arreglo, acceso_arreglo, ordenarfun,
 llamada_funcion, dec, llamada_funcion_exp, ordenes, sumarizarfun, longitud_exp, sumarizarfun_exp; //varios
@@ -95,8 +95,8 @@ lista_extiende ::= lista_extiende:h1 COMA ID:h2 {: comList=new ArrayList<>(); co
 |                                               {: comList=new ArrayList<>(); RESULT = new NodoAST("LISTA_EXTIENDE", comList, "sus_linea"); :}
 ;
 
-instrucciones ::= instrucciones:h1 instruccion:h2  {: RESULT = new NodoAST("INSTRUCCIONES", unirArrayList(((NodoAST)h1).getHijos(), ((NodoAST)h2).getHijos()), "sus_linea"); :}
-| instruccion:h1       {: RESULT = new NodoAST("INSTRUCCIONES", ((NodoAST)h1).getHijos(), "sus_linea"); :}
+instrucciones ::= instrucciones:h1 instruccion:h2   {: RESULT = new NodoAST("INSTRUCCIONES", unirArrayList(((NodoAST)h1).getHijos(), ((NodoAST)h2).getHijos()), "sus_linea"); :}
+| instruccion:h1                                    {: RESULT = new NodoAST("INSTRUCCIONES", ((NodoAST)h1).getHijos(), "sus_linea"); :}
 ;
 
 instruccion ::= declaracion_variable:h1     {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}
@@ -112,7 +112,7 @@ instruccion ::= declaracion_variable:h1     {: comList=new ArrayList<>(); comLis
 | continuar:h1                              {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}        
 | reproducir:h1                             {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}    
 | esperar:h1                                {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}               
-| ordenarfun:h1                             {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}       
+| ordenar:h1                                {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}       
 | sumarizarfun:h1                           {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}    
 | longitud:h1                               {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}             
 | principal:h1                              {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}          
@@ -165,8 +165,9 @@ exp ::= exp:h1 MAS:h2 exp:h3            {: comList=new ArrayList<>(); comList.ad
 | ID:h1                                 {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList<>(); comList2.add(new NodoAST("ID", comList, "sus_linea")); RESULT = new NodoAST("EXP", comList2, "sus_linea");:}
 | acceso_arreglo:h1                     {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
 | longitud_exp
-| sumarizarfun_exp
+| sumarizarfun_exp:h1                   {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
 | reproducir_exp:h1                     {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
+| ordenar_exp: h1                       {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
 ;
 
 acceso_arreglo ::= ID:h1 lista_corchetes_asignacion:h2 {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("ACCESO_ARREGLO",comList,"sus_linea"); :}
@@ -185,23 +186,25 @@ reproducir ::= REPRODUCIR PARENTESIS_A lista_expresiones:h1 PARENTESIS_C P_COMA 
 reproducir_exp ::= REPRODUCIR PARENTESIS_A lista_expresiones:h1 PARENTESIS_C   {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("REPRODUCIR_EXP",comList,"sus_linea"); :}
 ;
 
-ordenarfun ::= ORDENAR PARENTESIS_A lista_llaves COMA ordenes PARENTESIS_C P_COMA
-| ORDENAR PARENTESIS_A ID COMA ordenes PARENTESIS_C P_COMA
+ordenar ::= ORDENAR PARENTESIS_A ID:h1 COMA ordenes:h2 PARENTESIS_C P_COMA   {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("ORDENAR",comList,"sus_linea"); :}
 ;
 
-ordenes ::= ASC_ORD
-|DESC_ORD
-|PAR_ORD
-|IMP_ORD
-|PRIM_ORD
+ordenar_exp ::= ORDENAR PARENTESIS_A ID:h1 COMA ordenes:h2 PARENTESIS_C      {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("ORDENAR_EXP",comList,"sus_linea"); :}
 ;
 
-sumarizarfun ::= SUMARIZAR PARENTESIS_A ID PARENTESIS_C P_COMA
-| SUMARIZAR PARENTESIS_A lista_llaves PARENTESIS_C P_COMA
+ordenes ::= ASC_ORD:h1  {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("ORDENES",comList,"sus_linea"); :}
+|DESC_ORD:h1            {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("ORDENES",comList,"sus_linea"); :}
+|PAR_ORD:h1             {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("ORDENES",comList,"sus_linea"); :}
+|IMP_ORD:h1             {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("ORDENES",comList,"sus_linea"); :}
+|PRIM_ORD:h1            {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("ORDENES",comList,"sus_linea"); :}
 ;
 
-sumarizarfun_exp ::= SUMARIZAR PARENTESIS_A ID PARENTESIS_C 
-| SUMARIZAR PARENTESIS_A lista_llaves PARENTESIS_C 
+sumarizarfun ::= SUMARIZAR PARENTESIS_A ID:h1 PARENTESIS_C P_COMA      {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("SUMARIZARFUN",comList,"sus_linea"); :}
+/*| SUMARIZAR PARENTESIS_A lista_llaves PARENTESIS_C P_COMA */
+;
+
+sumarizarfun_exp ::= SUMARIZAR PARENTESIS_A ID:h1 PARENTESIS_C         {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("SUMARIZARFUN_EXP",comList,"sus_linea"); :}
+/*| SUMARIZAR PARENTESIS_A lista_llaves PARENTESIS_C */
 ;
 
 esperar ::= ESPERAR PARENTESIS_A lista_expresiones:h1 PARENTESIS_C P_COMA {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("ESPERAR",comList,"sus_linea"); :}
@@ -219,9 +222,6 @@ longitud_exp ::= LONGITUD PARENTESIS_A ID PARENTESIS_C
 |  LONGITUD PARENTESIS_A lista_llaves PARENTESIS_C  
 |  LONGITUD PARENTESIS_A CADENA_VAL PARENTESIS_C 
 ; 
-
-ordenar ::= ORDENAR PARENTESIS_A lista_expresiones PARENTESIS_C P_COMA
-;
 
 continuar ::= CONTINUAR:h1 {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("CONTINUAR",comList,"sus_linea");:} 
 ;
