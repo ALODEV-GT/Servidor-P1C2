@@ -50,6 +50,12 @@ public class AccesoArreglo extends Instruccion {
                     Errores.getInstance().push(new midik.Singletons.Error("Semantico", this.getLinea(), "Indice fuera del tamaño del arreglo."));
                     return null;
                 }
+
+                //Validar que los indices sean mayor o igual 0
+                if (valor < 0) {
+                    Errores.getInstance().push(new midik.Singletons.Error("Semantico", this.getLinea(), "No se aceptan indices negativos."));
+                    return null;
+                }
             }
 
         }

@@ -82,7 +82,7 @@ public class DeclaracionArreglo extends Instruccion {
                     Errores.getInstance().push(new midik.Singletons.Error("Semantico", this.getLinea(), "Las longitudes deben ser de tipo entero."));
                     return null;
                 } else {
-                    //Validar que los indices sean mayor a 0
+                    //Validar que las longitudes sean mayor a 0
                     Integer valor = Integer.valueOf((String) exp.getValor());
                     if (valor < 1) {
                         Errores.getInstance().push(new midik.Singletons.Error("Semantico", this.getLinea(), "Las longitudes/longitud debe ser mayor a 0."));
