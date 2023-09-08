@@ -1,11 +1,13 @@
 package midik.instrucciones;
 
 import java.util.ArrayList;
+import midik.Singletons.CentroCanales;
 import midik.Singletons.Errores;
 import midik.ejecucion.Entorno;
 import midik.ejecucion.Instruccion;
 import midik.ejecucion.Nativo;
 import midik.ejecucion.TipoNativo;
+import midik.musica.Nota;
 
 public class Reproducir extends Instruccion {
 
@@ -32,7 +34,7 @@ public class Reproducir extends Instruccion {
             return null;
         } else {
             //Validar que sea una nota correcta
-            if (this.perteneceAlConjuntoNotas(nota)) {
+            if (!this.perteneceAlConjuntoNotas(nota)) {
                 Errores.getInstance().push(new midik.Singletons.Error("Semantico", this.getLinea(), "No es una nota valida."));
                 return null;
             }
@@ -45,10 +47,21 @@ public class Reproducir extends Instruccion {
                 return null;
             }
         }
-        
-        
 
-        return null;
+        Integer octava = Integer.valueOf(((String) ((Nativo) (((Instruccion) this.parametros.get(1)).ejecutar(entorno))).getValor()));
+        //Verificar que la octava esta entre 0 y 8
+        if (octava < 0 || octava > 8) {
+            Errores.getInstance().push(new midik.Singletons.Error("Semantico", this.getLinea(), "La octava debe ser un Entero de 0 a 8. "));
+            return null;
+        }
+
+        String notaStr = (String) nota.getValor();
+        Long tiempo = (Integer.valueOf(((String) ((Nativo) (((Instruccion) this.parametros.get(2)).ejecutar(entorno))).getValor()))).longValue();
+        Integer canal = Integer.valueOf(((String) ((Nativo) (((Instruccion) this.parametros.get(3)).ejecutar(entorno))).getValor()));
+
+        CentroCanales.getInstance().agregarNota(new Nota(notaStr, octava, tiempo, canal));
+
+        return this.parametros.get(2);
     }
 
     private boolean perteneceAlConjuntoNotas(Nativo nota) {

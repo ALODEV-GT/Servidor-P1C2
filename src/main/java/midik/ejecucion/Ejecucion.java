@@ -3,6 +3,8 @@ package midik.ejecucion;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
+import midik.Singletons.CentroCanales;
+import midik.Singletons.CentroCanalesThread;
 import midik.arbol.NodoAST;
 import midik.defvariables.ListaVars;
 import midik.defvariables.TipoIgual;
@@ -46,6 +48,8 @@ import midik.instrucciones.Switch;
 import midik.instrucciones.XOR;
 import midik.miembroSi.Caso;
 import midik.miembroSi.Si;
+import midik.musica.Canal;
+import midik.musica.CanalThread;
 
 public class Ejecucion {
 
@@ -91,6 +95,31 @@ public class Ejecucion {
             Arreglo valor = arreglos.get(key);
             System.out.println(valor);
         }
+
+        //Ejecucion de musica
+        
+        Map<Integer, Canal> canales = CentroCanales.getInstance().getCanales();
+        Iterator<Integer> interatorC = canales.keySet().iterator();
+        while (interatorC.hasNext()) {
+            Integer key = interatorC.next();
+            Canal valor = canales.get(key);
+            CanalThread nuevoCanal = new CanalThread();
+            nuevoCanal.agregarMusica(valor.getNotas(), valor.getDuraciones());
+            CentroCanalesThread.getInstance().agregarCanalThread(nuevoCanal);
+        }
+        CentroCanalesThread.getInstance().reproducirCanales();
+        
+        
+        
+        
+       /* int[] notes = {60, 62, 64, 65, 67, 69, 71, 72};  // Números MIDI para notas
+        long[] durations = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};  // Duraciones en milisegundos para cada nota
+
+        CanalThread nuevoCanal = new CanalThread();
+        nuevoCanal.agregarMusica(notes, durations);
+        CentroCanalesThread.getInstance().agregarCanalThread(nuevoCanal);
+        CentroCanalesThread.getInstance().reproducirCanales();*/
+
     }
 
     public Object recorrer(Object nodo) {
