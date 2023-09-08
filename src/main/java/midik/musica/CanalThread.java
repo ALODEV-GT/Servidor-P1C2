@@ -31,9 +31,13 @@ public class CanalThread extends Thread {
                 int note = notes[i];
                 long duration = durations[i];
 
-                channel.noteOn(note, 100);
-                Thread.sleep(duration);
-                channel.noteOff(note);
+                if (note == 0) {
+                    Thread.sleep(duration);
+                } else {
+                    channel.noteOn(note, 100);
+                    Thread.sleep(duration);
+                    channel.noteOff(note);
+                }
             }
         }
     }

@@ -19,6 +19,7 @@ import midik.instrucciones.DeclaracionFuncion;
 import midik.instrucciones.DeclaracionVariable;
 import midik.instrucciones.DiferenteQue;
 import midik.instrucciones.Division;
+import midik.instrucciones.Esperar;
 import midik.instrucciones.HacerMientras;
 import midik.instrucciones.Id;
 import midik.instrucciones.IgualQue;
@@ -136,6 +137,13 @@ public class Ejecucion {
                 instrucciones.add(inst);
             }
             return instrucciones;
+        }
+        
+        //ESPERAR
+        if (this.soyNodo("ESPERAR", nodo)) {
+            NodoAST nodoA = (NodoAST) nodo;
+            Object parametros = this.recorrer(nodoA.getHijos().get(0));
+            return new Esperar(nodoA.getLinea(), parametros);
         }
 
         //REPRODUCIR

@@ -2408,7 +2408,10 @@ class CUP$parser$actions {
           case 85: // esperar ::= ESPERAR PARENTESIS_A lista_expresiones PARENTESIS_C P_COMA 
             {
               Object RESULT =null;
-
+		int h1left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
+		int h1right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
+		Object h1 = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		 comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("ESPERAR",comList,"sus_linea"); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("esperar",7, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

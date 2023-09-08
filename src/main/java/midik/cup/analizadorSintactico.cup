@@ -204,7 +204,7 @@ sumarizarfun_exp ::= SUMARIZAR PARENTESIS_A ID PARENTESIS_C
 | SUMARIZAR PARENTESIS_A lista_llaves PARENTESIS_C 
 ;
 
-esperar ::= ESPERAR PARENTESIS_A lista_expresiones PARENTESIS_C P_COMA
+esperar ::= ESPERAR PARENTESIS_A lista_expresiones:h1 PARENTESIS_C P_COMA {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("ESPERAR",comList,"sus_linea"); :}
 ;
 
 sumarizar ::= SUMARIZAR PARENTESIS_A lista_expresiones PARENTESIS_C P_COMA

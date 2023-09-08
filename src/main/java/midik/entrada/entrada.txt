@@ -1,7 +1,9 @@
 
 Pista nuevaPista {
-Mensaje(Reproducir("Do", 0, 3251, 1));
 
+<--
+Mensaje(Reproducir("Do", 0, 3251, 1));
+-->
 <--
  Reproducir("Do", 0, 3000, 1);
  Reproducir("Do", 1, 3000, 2);
@@ -13,7 +15,8 @@ Mensaje(Reproducir("Do", 0, 3251, 1));
  Reproducir("Do", 7, 3000, 8);
  Reproducir("Do", 8, 3000, 9);
 -->
-<--
+
+
 Para(Var Entero i = 0; i < 3; i = i +1){
         Reproducir("Do", 2 * (i+1), 500, i);
         Reproducir("Sol", 2 * (i+1), 500, i);
@@ -21,6 +24,8 @@ Para(Var Entero i = 0; i < 3; i = i +1){
         Reproducir("La", 2 * (i+1), 500, i);
         Reproducir("La", 2 * (i+1), 500, i);
         Reproducir("Sol", 2 * (i+1), 500, i);
+        Esperar(500, i);
+
         Reproducir("Fa", 2 * (i+1), 500, i);
         Reproducir("Fa", 2 * (i+1), 500, i);
         Reproducir("Mi", 2 * (i+1), 500, i);
@@ -28,6 +33,7 @@ Para(Var Entero i = 0; i < 3; i = i +1){
         Reproducir("Re", 2 * (i+1), 500, i);
         Reproducir("Re", 2 * (i+1), 500, i);
         Reproducir("Do", 2 * (i+1), 500, i);
+        Esperar(500, i);
 
         Reproducir("Sol", 2 * (i+1), 500, i);
         Reproducir("Sol", 2 * (i+1), 500, i);
@@ -36,6 +42,8 @@ Para(Var Entero i = 0; i < 3; i = i +1){
         Reproducir("Mi", 2 * (i+1), 500, i);
         Reproducir("Mi", 2 * (i+1), 500, i);
         Reproducir("Re", 2 * (i+1), 500, i);
+        Esperar(500, i);
+
 Si(2*(i+1)<5){
         Reproducir("Sol", 2 * (i+1), 500, i);
         Reproducir("Sol", 2 * (i+1), 500, i);
@@ -44,6 +52,7 @@ Si(2*(i+1)<5){
         Reproducir("Mi", 2 * (i+1), 500, i);
         Reproducir("Mi", 2 * (i+1), 500, i);
         Reproducir("Re", 2 * (i+1), 500, i);
+        Esperar(500, i);
 
         Reproducir("Do", 2 * (i+1), 500, i);
         Reproducir("Do", 2 * (i+1), 500, i);
@@ -52,6 +61,8 @@ Si(2*(i+1)<5){
         Reproducir("La", 2 * (i+1), 500, i);
         Reproducir("La", 2 * (i+1), 500, i);
         Reproducir("Sol", 2 * (i+1), 500, i);
+        Esperar(500, i);
+
         Reproducir("Fa", 2 * (i+1), 500, i);
         Reproducir("Fa", 2 * (i+1), 500, i);
         Reproducir("Mi", 2 * (i+1), 500, i);
@@ -61,7 +72,6 @@ Si(2*(i+1)<5){
         Reproducir("Do", 2 * (i+1), 500, i);
 }
 }
--->
 
 <--
     Var Boolean band1 = 44+6!=4;
