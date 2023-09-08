@@ -37,6 +37,7 @@ import midik.instrucciones.NOR;
 import midik.instrucciones.OR;
 import midik.instrucciones.Para;
 import midik.instrucciones.Potencia;
+import midik.instrucciones.Reproducir;
 import midik.instrucciones.Resta;
 import midik.instrucciones.RetornarI;
 import midik.instrucciones.SalirI;
@@ -108,6 +109,20 @@ public class Ejecucion {
             return instrucciones;
         }
 
+        //REPRODUCIR
+        if (this.soyNodo("REPRODUCIR", nodo)) {
+            NodoAST nodoA = (NodoAST) nodo;
+            Object parametros = this.recorrer(nodoA.getHijos().get(0));
+            return new Reproducir(nodoA.getLinea(), parametros);
+        }
+
+        //REPRODUCIR_EXP
+        if (this.soyNodo("REPRODUCIR_EXP", nodo)) {
+            NodoAST nodoA = (NodoAST) nodo;
+            Object parametros = this.recorrer(nodoA.getHijos().get(0));
+            return new Reproducir(nodoA.getLinea(), parametros);
+        }
+
         //ACCESO_ARREGLO
         if (this.soyNodo("ACCESO_ARREGLO", nodo)) {
             NodoAST nodoA = (NodoAST) nodo;
@@ -130,6 +145,19 @@ public class Ejecucion {
 
         //LLAMADA_FUNCION
         if (this.soyNodo("LLAMADA_FUNCION", nodo)) {
+            NodoAST nodoA = (NodoAST) nodo;
+            String id = (String) nodoA.getHijos().get(0);
+            switch (nodoA.getHijos().size()) {
+                case 1:
+                    return new LlamadaFuncion(nodoA.getLinea(), id, null);
+                case 2:
+                    Object listaExpresiones = this.recorrer(nodoA.getHijos().get(1));
+                    return new LlamadaFuncion(nodoA.getLinea(), id, listaExpresiones);
+            }
+        }
+
+        //LLAMADA_FUNCION_EXP
+        if (this.soyNodo("LLAMADA_FUNCION_EXP", nodo)) {
             NodoAST nodoA = (NodoAST) nodo;
             String id = (String) nodoA.getHijos().get(0);
             switch (nodoA.getHijos().size()) {
