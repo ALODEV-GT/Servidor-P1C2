@@ -2,6 +2,7 @@
 package midik.jflex;
 import java_cup.runtime.Symbol;
 import midik.cup.sym;
+import midik.Singletons.Errores;
 
 %% //Opciones y declaraciones
 %class AnalizadorLexico //Nombre de la clase a generar
@@ -18,7 +19,6 @@ import midik.cup.sym;
 
     public AnalizadorLexico(java.io.Reader in, String nombreArchivo){
         this(in);
-        System.out.println("Parametro: " + nombreArchivo);
     }
 
     private Symbol symbol(int type) {
@@ -30,11 +30,11 @@ import midik.cup.sym;
     }
 
     private void agregarComentarioLinea(String comentario){
-        System.out.println("Comentario en linea agregado");
+        //System.out.println("Comentario en linea agregado");
     }
 
     private void agregarComentarioBloque(String comentario){
-        System.out.println("Comentario en bloque agregado");
+        //System.out.println("Comentario en bloque agregado");
     }
 %}
 
@@ -228,5 +228,5 @@ CARACTER_VAL = "'"{CARACTERES}"'"
 }
 
 <<EOF>>                                         { return symbol(sym.EOF,"FIN"); }
-<YYINITIAL> .                                   { System.out.println("El simbolo " + yytext() + " no existe en el lenguaje." + " Linea:" + (yyline+1) + " Columna:" + yycolumn + "\n");}
+<YYINITIAL> .                                   { Errores.getInstance().push(new midik.Singletons.Error("Lexico", String.valueOf(yyline+1) + " Columna:" + yycolumn, "El simbolo " + yytext() + " no existe en el lenguaje."));}
 

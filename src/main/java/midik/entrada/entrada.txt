@@ -3,64 +3,20 @@ Pista nuevaPista {
 
     Var Cadena texto = "Finnn";
 
-    
-
     Cadena ejecutarCancion(){
-        Para(Var Entero i = 0; i < 3; i = i +1){
-            Reproducir("Do", 2 * (i+1), 500, i);
-            Reproducir("Sol", 2 * (i+1), 500, i);
-            Reproducir("Sol", 2 * (i+1), 500, i);
-            Reproducir("La", 2 * (i+1), 500, i);
-            Reproducir("La", 2 * (i+1), 500, i);
-            Reproducir("Sol", 2 * (i+1), 500, i);
-            Esperar(500, i);
-
-            Reproducir("Fa", 2 * (i+1), 500, i);
-            Reproducir("Fa", 2 * (i+1), 500, i);
-            Reproducir("Mi", 2 * (i+1), 500, i);
-            Reproducir("Mi", 2 * (i+1), 500, i);
-            Reproducir("Re", 2 * (i+1), 500, i);
-            Reproducir("Re", 2 * (i+1), 500, i);
-            Reproducir("Do", 2 * (i+1), 500, i);
-            Esperar(500, i);
-
-            Reproducir("Sol", 2 * (i+1), 500, i);
-            Reproducir("Sol", 2 * (i+1), 500, i);
-            Reproducir("Fa", 2 * (i+1), 500, i);
-            Reproducir("Fa", 2 * (i+1), 500, i);
-            Reproducir("Mi", 2 * (i+1), 500, i);
-            Reproducir("Mi", 2 * (i+1), 500, i);
-            Reproducir("Re", 2 * (i+1), 500, i);
-            Esperar(500, i);
-
-            Si(2*(i+1)<5){
-                Reproducir("Sol", 2 * (i+1), 500, i);
-                Reproducir("Sol", 2 * (i+1), 500, i);
-                Reproducir("Fa", 2 * (i+1), 500, i);
-                Reproducir("Fa", 2 * (i+1), 500, i);
-                Reproducir("Mi", 2 * (i+1), 500, i);
-                Reproducir("Mi", 2 * (i+1), 500, i);
-                Reproducir("Re", 2 * (i+1), 500, i);
-                Esperar(500, i);
-
-                Reproducir("Do", 2 * (i+1), 500, i);
-                Reproducir("Do", 2 * (i+1), 500, i);
-                Reproducir("Sol", 2 * (i+1), 500, i);
-                Reproducir("Sol", 2 * (i+1), 500, i);
-                Reproducir("La", 2 * (i+1), 500, i);
-                Reproducir("La", 2 * (i+1), 500, i);
-                Reproducir("Sol", 2 * (i+1), 500, i);
-                Esperar(500, i);
-
-                Reproducir("Fa", 2 * (i+1), 500, i);
-                Reproducir("Fa", 2 * (i+1), 500, i);
-                Reproducir("Mi", 2 * (i+1), 500, i);
-                Reproducir("Mi", 2 * (i+1), 500, i);
-                Reproducir("Re", 2 * (i+1), 500, i);
-                Reproducir("Re", 2 * (i+1), 500, i);
-                Reproducir("Do", 2 * (i+1), 500, i);
-            }
-        }
+        
+        Reproducir("Do",   5, 500, 1);
+        Reproducir("Do#",  5, 500, 1);
+        Reproducir("Re",   5, 500, 1);
+        Reproducir("Re#",  5, 500, 1);
+        Reproducir("Mi",   5, 500, 1);
+        Reproducir("Fa",   5, 500, 1);
+        Reproducir("Fa#",  5, 500, 1);
+        Reproducir("Sol",  5, 500, 1);
+        Reproducir("Sol#", 5, 500, 1);
+        Reproducir("La",   5, 500, 1);
+        Reproducir("La#",  5, 500, 1);
+        Reproducir("Si",   5, 500, 1);
 
         Retorna texto;
     }

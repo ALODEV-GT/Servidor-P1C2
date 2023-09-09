@@ -12,7 +12,9 @@ public class Canal {
     }
 
     public void agregarNota(Nota nota) {
-        this.notas.add(nota);
+        if (!estaEnLaListaNegra(nota)) {
+            this.notas.add(nota);
+        }
     }
 
     public int[] getNotas() {
@@ -29,6 +31,11 @@ public class Canal {
             tiempos[i] = this.notas.get(i).getTiempo();
         }
         return tiempos;
+    }
+
+    public boolean estaEnLaListaNegra(Nota nota) {
+        int midi = nota.getRepMidi();
+        return midi < 21 || midi > 108;
     }
 
 }

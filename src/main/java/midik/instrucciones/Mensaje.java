@@ -1,6 +1,7 @@
 package midik.instrucciones;
 
 import java.util.ArrayList;
+import midik.Singletons.Consola;
 import midik.ejecucion.Nativo;
 import midik.ejecucion.Entorno;
 import midik.ejecucion.Instruccion;
@@ -23,7 +24,7 @@ public class Mensaje extends Instruccion {
                 if (((Nativo) res).getTipo() == TipoNativo.ENTERO || ((Nativo) res).getTipo() == TipoNativo.BOOLEAN
                         || ((Nativo) res).getTipo() == TipoNativo.CADENA || ((Nativo) res).getTipo() == TipoNativo.DECIMAL
                         || ((Nativo) res).getTipo() == TipoNativo.CARACTER) {
-                    System.out.println(((Nativo) res).getValor().toString());
+                    Consola.getInstance().push(((Nativo) res).getValor().toString());
                 }
             }
         }
