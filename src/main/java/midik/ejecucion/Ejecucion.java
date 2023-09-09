@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 import midik.Singletons.CentroCanales;
 import midik.Singletons.CentroCanalesThread;
+import midik.Singletons.Errores;
 import midik.arbol.NodoAST;
 import midik.defvariables.ListaVars;
 import midik.defvariables.TipoIgual;
@@ -25,6 +26,7 @@ import midik.instrucciones.Id;
 import midik.instrucciones.IgualQue;
 import midik.instrucciones.InstruccionSi;
 import midik.instrucciones.LlamadaFuncion;
+import midik.instrucciones.Longitud;
 import midik.instrucciones.MasMas;
 import midik.instrucciones.MayorIgual;
 import midik.instrucciones.MayorQue;
@@ -41,6 +43,7 @@ import midik.instrucciones.OR;
 import midik.instrucciones.Ordenar;
 import midik.instrucciones.Para;
 import midik.instrucciones.Potencia;
+import midik.instrucciones.Principal;
 import midik.instrucciones.Reproducir;
 import midik.instrucciones.Resta;
 import midik.instrucciones.RetornarI;
@@ -64,11 +67,24 @@ public class Ejecucion {
     }
 
     public void ejecutar() {
-        Object instrucciones = this.recorrer(this.raiz);
+        ArrayList<Instruccion> instrucciones = (ArrayList<Instruccion>) this.recorrer(this.raiz);
+
+        //Comprobar instrucciones padre
+        boolean validoInstPadres = verificarInstruccionesPadre(instrucciones);
+        int nunPrinciapal = cantidadFuncionPrincipal(instrucciones);
+        if (!validoInstPadres || nunPrinciapal > 1) {
+            return;
+        }
+
+        if (nunPrinciapal == 1) {
+            Instruccion inst = instrucciones.get(0);
+            LlamadaFuncion llamFuncionPrincipal = new LlamadaFuncion(inst.getLinea(), "Principal", null);
+            instrucciones.add(llamFuncionPrincipal);
+        }
 
         Entorno entornoGlobal = new Entorno(null);
 
-        for (Instruccion instruccion : (ArrayList<Instruccion>) instrucciones) {
+        for (Instruccion instruccion :  instrucciones) {
             instruccion.ejecutar(entornoGlobal);
         }
 
@@ -111,16 +127,36 @@ public class Ejecucion {
         }
         CentroCanalesThread.getInstance().reproducirCanales();
 
-        /* int[] notes = {60, 62, 64, 65, 67, 69, 71, 72};  // Números MIDI para notas
-        long[] durations = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};  // Duraciones en milisegundos para cada nota
-
-        CanalThread nuevoCanal = new CanalThread();
-        nuevoCanal.agregarMusica(notes, durations);
-        CentroCanalesThread.getInstance().agregarCanalThread(nuevoCanal);
-        CentroCanalesThread.getInstance().reproducirCanales();*/
     }
 
-    public Object recorrer(Object nodo) {
+    private boolean verificarInstruccionesPadre(ArrayList<Instruccion> instrucciones) {
+        boolean valido = true;
+        for (Instruccion inst : instrucciones) {
+            if (!(inst instanceof DeclaracionVariable || inst instanceof DeclaracionFuncion || inst instanceof Principal)) {
+                Errores.getInstance().push(new midik.Singletons.Error("Semantico ", inst.getLinea(), "Solo puedes declarar funciones, variables o la clase principal en el area principal"));
+                valido = false;
+                break;
+            }
+        }
+        return valido;
+    }
+
+    private int cantidadFuncionPrincipal(ArrayList<Instruccion> instrucciones) {
+        int contador = 0;
+        for (Instruccion inst : instrucciones) {
+            if (inst instanceof Principal) {
+                contador++;
+            }
+
+            if (contador > 1) {
+                Errores.getInstance().push(new midik.Singletons.Error("Semantico ", inst.getLinea(), "Solo puedes declarar una unica vez la funcion principal"));
+                break;
+            }
+        }
+        return contador;
+    }
+
+    private Object recorrer(Object nodo) {
         //INICIO
         if (this.soyNodo("S", nodo)) {
             return this.recorrer(((NodoAST) nodo).getHijos().get(1));
@@ -134,6 +170,39 @@ public class Ejecucion {
                 instrucciones.add(inst);
             }
             return instrucciones;
+        }
+
+        //PRINCIPAL
+        if (this.soyNodo("PRINCIPAL", nodo)) {
+            NodoAST nodoA = (NodoAST) nodo;
+            Object instrucciones = this.recorrer(nodoA.getHijos().get(0));
+            return new Principal(nodoA.getLinea(), instrucciones);
+        }
+
+        //LONGITUD
+        if (this.soyNodo("LONGITUD", nodo)) {
+            NodoAST nodoA = (NodoAST) nodo;
+            switch (nodoA.getHijos().size()) {
+                case 1:
+                    Object id = nodoA.getHijos().get(0);
+                    return new Longitud(nodoA.getLinea(), (String) id);
+                case 2:
+                    Object exp = nodoA.getHijos().get(0);
+                    return new Longitud(nodoA.getLinea(), exp);
+            }
+        }
+
+        //LONGITUD_EXP
+        if (this.soyNodo("LONGITUD_EXP", nodo)) {
+            NodoAST nodoA = (NodoAST) nodo;
+            switch (nodoA.getHijos().size()) {
+                case 1:
+                    Object id = nodoA.getHijos().get(0);
+                    return new Longitud(nodoA.getLinea(), (String) id);
+                case 2:
+                    Object exp = nodoA.getHijos().get(0);
+                    return new Longitud(nodoA.getLinea(), exp);
+            }
         }
 
         //SUMARIZARFUN
