@@ -3,6 +3,8 @@ package midik.frontend;
 import java.io.StringReader;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
+import midik.Singletons.CentroCanales;
+import midik.Singletons.CentroCanalesThread;
 import midik.Singletons.Errores;
 import midik.Singletons.Error;
 import midik.arbol.NodoAST;
@@ -109,26 +111,27 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }
 
     private void ejecutar(StringReader entrada) {
-        AnalizadorLexico lexer = new AnalizadorLexico(entrada, "HOLA LEXER");
-        parser par = new parser(lexer, "HOLA PARSER");
+        Errores.getInstance().clear();
+        CentroCanales.getInstance().clear();
+        CentroCanalesThread.getInstance().clear();
+                
+
+        AnalizadorLexico lexer = new AnalizadorLexico(entrada, "");
+        parser par = new parser(lexer, "");
 
         try {
             par.parse();
             NodoAST raiz = par.getRaiz();
-            System.out.println(raiz.getEtiqueta());
-
             Ejecucion ejecucion = new Ejecucion(raiz);
             ejecucion.ejecutar();
-
-            Errores errs = Errores.getInstance();
-            ArrayList<Error> lista = errs.getErrors();
-            for (Error e : lista) {
-                System.out.println(e);
-            }
-
         } catch (Exception ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Algo grave ocurrio con el analizador sintactico", "", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Hay errores", "", JOptionPane.ERROR_MESSAGE);
+        }
+
+        Errores errs = Errores.getInstance();
+        ArrayList<Error> lista = errs.getErrors();
+        for (Error e : lista) {
+            System.out.println(e);
         }
     }
 

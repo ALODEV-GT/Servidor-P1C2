@@ -2,6 +2,7 @@ package midik.cup;
 import java_cup.runtime.Symbol;
 import midik.arbol.NodoAST;
 import java.util.ArrayList;
+import midik.Singletons.Errores;
 
 parser code
 {:  
@@ -12,15 +13,16 @@ parser code
 
     public parser(java_cup.runtime.Scanner s, String param){
         this(s);
-        System.out.println("Parametro desde parser: " + param);
     }
 
     public void syntax_error(Symbol s){
-        System.out.println("Error sintactico: " + s.value.toString() + " Linea:" + s.right + " Columna:" + s.left + ". ");
+        Errores.getInstance().push(new midik.Singletons.Error("Sintactico", String.valueOf(s.right), s.value.toString()));
+        //System.out.println("Error sintactico: " + s.value.toString() + " Linea:" + s.right + " Columna:" + s.left + ". ");
     }
 
     public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception {
-        System.out.println("No se pudo recuperar el analizador." + " Linea:" + s.right + " Columna:" + s.left + "\n");
+        Errores.getInstance().push(new midik.Singletons.Error("Sintactico", String.valueOf(s.right), "No se pudo recuperar el analizador sintactico."));
+        //System.out.println("No se pudo recuperar el analizador." + " Linea:" + s.right + " Columna:" + s.left + "\n");
     }
 
     public NodoAST getRaiz(){
@@ -81,282 +83,284 @@ start with s;
 s ::= definir_pista 
 ;
 
-definir_pista ::= add_extender:h1 LLAVE_A instrucciones:h2 LLAVE_C {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); cambiarRaiz(new NodoAST("S",comList,"sus_linea")); :}
+definir_pista ::= add_extender:h1 LLAVE_A instrucciones:h2 LLAVE_C {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); cambiarRaiz(new NodoAST("S",comList,String.valueOf(h1left), String.valueOf(h1right))); :}
 ;
 
-add_extender ::= PISTA ID:h1    {:comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("ADD_EXTENDER", comList, "sus_linea"); :}
-| PISTA ID:h1 extender:h2       {:comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("ADD_EXTENDER", unirArrayList(comList, ((NodoAST)h2).getHijos()), "sus_linea"); :}
+add_extender ::= PISTA ID:h1    {:comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("ADD_EXTENDER", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
+| PISTA ID:h1 extender:h2       {:comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("ADD_EXTENDER", unirArrayList(comList, ((NodoAST)h2).getHijos()), String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-extender ::= EXTIENDE ID:h1 lista_extiende:h2 {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("EXTENDER", unirArrayList(comList, ((NodoAST)h2).getHijos()), "sus_linea"); :}
+extender ::= EXTIENDE ID:h1 lista_extiende:h2 {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("EXTENDER", unirArrayList(comList, ((NodoAST)h2).getHijos()), String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-lista_extiende ::= lista_extiende:h1 COMA ID:h2 {: comList=new ArrayList<>(); comList.add(h2); RESULT = new NodoAST("LISTA_EXTIENDE", unirArrayList(comList, ((NodoAST)h1).getHijos()), "sus_linea"); :}
-|                                               {: comList=new ArrayList<>(); RESULT = new NodoAST("LISTA_EXTIENDE", comList, "sus_linea"); :}
+lista_extiende ::= lista_extiende:h1 COMA ID:h2 {: comList=new ArrayList<>(); comList.add(h2); RESULT = new NodoAST("LISTA_EXTIENDE", unirArrayList(comList, ((NodoAST)h1).getHijos()), String.valueOf(h1left), String.valueOf(h1right)); :}
+|                                               {: comList=new ArrayList<>(); RESULT = new NodoAST("LISTA_EXTIENDE", comList, "---","---"); :}
 ;
 
-instrucciones ::= instrucciones:h1 instruccion:h2   {: RESULT = new NodoAST("INSTRUCCIONES", unirArrayList(((NodoAST)h1).getHijos(), ((NodoAST)h2).getHijos()), "sus_linea"); :}
-| instruccion:h1                                    {: RESULT = new NodoAST("INSTRUCCIONES", ((NodoAST)h1).getHijos(), "sus_linea"); :}
+instrucciones ::= instrucciones:h1 instruccion:h2   {: RESULT = new NodoAST("INSTRUCCIONES", unirArrayList(((NodoAST)h1).getHijos(), ((NodoAST)h2).getHijos()), String.valueOf(h1left), String.valueOf(h1right)); :}
+| instruccion:h1                                    {: RESULT = new NodoAST("INSTRUCCIONES", ((NodoAST)h1).getHijos(), String.valueOf(h1left), String.valueOf(h1right)); :}
+| error P_COMA
+| error LLAVE_C  
 ;
 
-instruccion ::= declaracion_variable:h1     {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}
-| llamada_funcion:h1                        {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}
-| declaracion_funcion:h1                    {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}        
-| asignacion:h1                             {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}        
-| mensaje:h1                                {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}           
-| instruccion_si:h1                         {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}         
-| switch:h1                                 {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}          
-| para:h1                                   {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}                      
-| mientras:h1                               {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}      
-| hacer_mientras:h1                         {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}       
-| continuar:h1                              {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}        
-| reproducir:h1                             {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}    
-| esperar:h1                                {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}               
-| ordenar:h1                                {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}       
-| sumarizarfun:h1                           {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}    
-| longitud:h1                               {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}             
-| principal:h1                              {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}          
-| retornar:h1                               {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :}       
-| salir:h1                                  {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,"sus_linea"); :} 
+instruccion ::= declaracion_variable:h1     {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
+| llamada_funcion:h1                        {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
+| declaracion_funcion:h1                    {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,String.valueOf(h1left), String.valueOf(h1right)); :}        
+| asignacion:h1                             {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,String.valueOf(h1left), String.valueOf(h1right)); :}        
+| mensaje:h1                                {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,String.valueOf(h1left), String.valueOf(h1right)); :}           
+| instruccion_si:h1                         {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,String.valueOf(h1left), String.valueOf(h1right)); :}         
+| switch:h1                                 {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,String.valueOf(h1left), String.valueOf(h1right)); :}          
+| para:h1                                   {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,String.valueOf(h1left), String.valueOf(h1right)); :}                      
+| mientras:h1                               {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,String.valueOf(h1left), String.valueOf(h1right)); :}      
+| hacer_mientras:h1                         {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,String.valueOf(h1left), String.valueOf(h1right)); :}       
+| continuar:h1                              {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,String.valueOf(h1left), String.valueOf(h1right)); :}        
+| reproducir:h1                             {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,String.valueOf(h1left), String.valueOf(h1right)); :}    
+| esperar:h1                                {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,String.valueOf(h1left), String.valueOf(h1right)); :}               
+| ordenar:h1                                {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,String.valueOf(h1left), String.valueOf(h1right)); :}       
+| sumarizarfun:h1                           {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,String.valueOf(h1left), String.valueOf(h1right)); :}    
+| longitud:h1                               {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,String.valueOf(h1left), String.valueOf(h1right)); :}             
+| principal:h1                              {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,String.valueOf(h1left), String.valueOf(h1right)); :}          
+| retornar:h1                               {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,String.valueOf(h1left), String.valueOf(h1right)); :}       
+| salir:h1                                  {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("INSTRUCCION",comList,String.valueOf(h1left), String.valueOf(h1right)); :} 
 ;
 
-retornar ::= RETORNA exp:h1 P_COMA  {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("RETORNAR", comList, "sus_linea"); :}
-| RETORNA P_COMA                    {: comList=new ArrayList<>(); RESULT=new NodoAST("RETORNAR", comList, "sus_linea"); :}
+retornar ::= RETORNA exp:h1 P_COMA  {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("RETORNAR", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
+| RETORNA:h1 P_COMA                    {: comList=new ArrayList<>(); RESULT=new NodoAST("RETORNAR", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-llamada_funcion ::= ID:h1 PARENTESIS_A PARENTESIS_C P_COMA          {: comList=new ArrayList(); comList.add(h1); RESULT=new NodoAST("LLAMADA_FUNCION",comList,"sus_linea"); :}
-| ID:h1 PARENTESIS_A lista_expresiones:h2 PARENTESIS_C P_COMA       {: comList=new ArrayList(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("LLAMADA_FUNCION",comList,"sus_linea"); :}
+llamada_funcion ::= ID:h1 PARENTESIS_A PARENTESIS_C P_COMA          {: comList=new ArrayList(); comList.add(h1); RESULT=new NodoAST("LLAMADA_FUNCION",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
+| ID:h1 PARENTESIS_A lista_expresiones:h2 PARENTESIS_C P_COMA       {: comList=new ArrayList(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("LLAMADA_FUNCION",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-llamada_funcion_exp ::= ID:h1 PARENTESIS_A PARENTESIS_C     {: comList=new ArrayList(); comList.add(h1); RESULT=new NodoAST("LLAMADA_FUNCION_EXP",comList,"sus_linea"); :} 
-| ID:h1 PARENTESIS_A lista_expresiones:h2 PARENTESIS_C      {: comList=new ArrayList(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("LLAMADA_FUNCION_EXP",comList,"sus_linea"); :}
+llamada_funcion_exp ::= ID:h1 PARENTESIS_A PARENTESIS_C     {: comList=new ArrayList(); comList.add(h1); RESULT=new NodoAST("LLAMADA_FUNCION_EXP",comList,String.valueOf(h1left), String.valueOf(h1right)); :} 
+| ID:h1 PARENTESIS_A lista_expresiones:h2 PARENTESIS_C      {: comList=new ArrayList(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("LLAMADA_FUNCION_EXP",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-principal ::= PRINCIPAL PARENTESIS_A PARENTESIS_C LLAVE_A instrucciones:h1 LLAVE_C {: comList=new ArrayList(); comList.add(h1); RESULT=new NodoAST("PRINCIPAL",comList,"sus_linea"); :}
+principal ::= PRINCIPAL PARENTESIS_A PARENTESIS_C LLAVE_A instrucciones:h1 LLAVE_C {: comList=new ArrayList(); comList.add(h1); RESULT=new NodoAST("PRINCIPAL",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-exp ::= exp:h1 MAS:h2 exp:h3            {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}   
-| exp:h1 MENOS:h2 exp:h3                {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}                             
-| exp:h1 POR:h2 exp:h3                  {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
-| exp:h1 DIVISION:h2 exp:h3             {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
-| exp:h1 MOD:h2 exp:h3                  {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
-| exp:h1 POT:h2 exp:h3                  {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
-| PARENTESIS_A exp:h1 PARENTESIS_C      {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
-| exp:h1 MAYOR_QUE:h2 exp:h3            {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
-| exp:h1 MENOR_QUE:h2 exp:h3            {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
-| exp:h1 MAYOR_IGUAL:h2 exp:h3          {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
-| exp:h1 MENOR_IGUAL:h2 exp:h3          {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
-| exp:h1 IGUAL:h2 exp:h3                {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
-| exp:h1 DIFERENTE:h2 exp:h3            {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
+exp ::= exp:h1 MAS:h2 exp:h3            {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, String.valueOf(h1left), String.valueOf(h1right)); :}   
+| exp:h1 MENOS:h2 exp:h3                {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, String.valueOf(h1left), String.valueOf(h1right)); :}                             
+| exp:h1 POR:h2 exp:h3                  {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
+| exp:h1 DIVISION:h2 exp:h3             {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
+| exp:h1 MOD:h2 exp:h3                  {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
+| exp:h1 POT:h2 exp:h3                  {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
+| PARENTESIS_A exp:h1 PARENTESIS_C      {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("EXP", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
+| exp:h1 MAYOR_QUE:h2 exp:h3            {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
+| exp:h1 MENOR_QUE:h2 exp:h3            {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
+| exp:h1 MAYOR_IGUAL:h2 exp:h3          {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
+| exp:h1 MENOR_IGUAL:h2 exp:h3          {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
+| exp:h1 IGUAL:h2 exp:h3                {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
+| exp:h1 DIFERENTE:h2 exp:h3            {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
 | IS_NULL exp
-| exp:h1 AND:h2 exp:h3                  {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
-| exp:h1 NAND:h2 exp:h3                 {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
-| exp:h1 OR:h2 exp:h3                   {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
-| exp:h1 NOR:h2 exp:h3                  {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
-| exp:h1 XOR:h2 exp:h3                  {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
+| exp:h1 AND:h2 exp:h3                  {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
+| exp:h1 NAND:h2 exp:h3                 {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
+| exp:h1 OR:h2 exp:h3                   {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
+| exp:h1 NOR:h2 exp:h3                  {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
+| exp:h1 XOR:h2 exp:h3                  {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("EXP", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
 | NOT exp
-| ENTERO_VAL:h1                         {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList<>(); comList2.add(new NodoAST("ENTERO_VAL", comList, "sus_linea")); RESULT = new NodoAST("EXP", comList2, "sus_linea");:}
-| DOBLE_VAL:h1                          {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList<>(); comList2.add(new NodoAST("DOBLE_VAL", comList, "sus_linea")); RESULT = new NodoAST("EXP", comList2, "sus_linea");:}
-| VERDADERO:h1                          {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList<>(); comList2.add(new NodoAST("VERDADERO", comList, "sus_linea")); RESULT = new NodoAST("EXP", comList2, "sus_linea");:}
-| FALSO:h1                              {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList<>(); comList2.add(new NodoAST("FALSO", comList, "sus_linea")); RESULT = new NodoAST("EXP", comList2, "sus_linea");:}
-| CADENA_VAL:h1                         {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList<>(); comList2.add(new NodoAST("CADENA_VAL", comList, "sus_linea")); RESULT = new NodoAST("EXP", comList2, "sus_linea");:}
-| CARACTER_VAL:h1                       {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList<>(); comList2.add(new NodoAST("CARACTER_VAL", comList, "sus_linea")); RESULT = new NodoAST("EXP", comList2, "sus_linea");:}
-| llamada_funcion_exp:h1                {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
-| ID:h1                                 {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList<>(); comList2.add(new NodoAST("ID", comList, "sus_linea")); RESULT = new NodoAST("EXP", comList2, "sus_linea");:}
-| acceso_arreglo:h1                     {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
-| longitud_exp:h1                       {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
-| sumarizarfun_exp:h1                   {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
-| reproducir_exp:h1                     {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
-| ordenar_exp: h1                       {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("EXP", comList, "sus_linea"); :}
+| ENTERO_VAL:h1                         {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList<>(); comList2.add(new NodoAST("ENTERO_VAL", comList, String.valueOf(h1left), String.valueOf(h1right))); RESULT = new NodoAST("EXP", comList2, String.valueOf(h1left), String.valueOf(h1right));:}
+| DOBLE_VAL:h1                          {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList<>(); comList2.add(new NodoAST("DOBLE_VAL", comList, String.valueOf(h1left), String.valueOf(h1right))); RESULT = new NodoAST("EXP", comList2, String.valueOf(h1left), String.valueOf(h1right));:}
+| VERDADERO:h1                          {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList<>(); comList2.add(new NodoAST("VERDADERO", comList, String.valueOf(h1left), String.valueOf(h1right))); RESULT = new NodoAST("EXP", comList2, String.valueOf(h1left), String.valueOf(h1right));:}
+| FALSO:h1                              {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList<>(); comList2.add(new NodoAST("FALSO", comList, String.valueOf(h1left), String.valueOf(h1right))); RESULT = new NodoAST("EXP", comList2, String.valueOf(h1left), String.valueOf(h1right));:}
+| CADENA_VAL:h1                         {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList<>(); comList2.add(new NodoAST("CADENA_VAL", comList, String.valueOf(h1left), String.valueOf(h1right))); RESULT = new NodoAST("EXP", comList2, String.valueOf(h1left), String.valueOf(h1right));:}
+| CARACTER_VAL:h1                       {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList<>(); comList2.add(new NodoAST("CARACTER_VAL", comList, String.valueOf(h1left), String.valueOf(h1right))); RESULT = new NodoAST("EXP", comList2, String.valueOf(h1left), String.valueOf(h1right));:}
+| llamada_funcion_exp:h1                {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("EXP", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
+| ID:h1                                 {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList<>(); comList2.add(new NodoAST("ID", comList, String.valueOf(h1left), String.valueOf(h1right))); RESULT = new NodoAST("EXP", comList2, String.valueOf(h1left), String.valueOf(h1right));:}
+| acceso_arreglo:h1                     {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("EXP", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
+| longitud_exp:h1                       {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("EXP", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
+| sumarizarfun_exp:h1                   {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("EXP", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
+| reproducir_exp:h1                     {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("EXP", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
+| ordenar_exp: h1                       {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("EXP", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-acceso_arreglo ::= ID:h1 lista_corchetes_asignacion:h2 {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("ACCESO_ARREGLO",comList,"sus_linea"); :}
+acceso_arreglo ::= ID:h1 lista_corchetes_asignacion:h2 {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("ACCESO_ARREGLO",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-mensaje ::= MENSAJE PARENTESIS_A lista_expresiones:h1 PARENTESIS_C P_COMA {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("MENSAJE",comList,"sus_linea"); :}
+mensaje ::= MENSAJE PARENTESIS_A lista_expresiones:h1 PARENTESIS_C P_COMA {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("MENSAJE",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-lista_expresiones ::= lista_expresiones:h1 COMA exp:h2  {: comList=new ArrayList<>(); comList.add(h2); RESULT=new NodoAST("LISTA_EXPRESIONES",unirArrayList(((NodoAST)h1).getHijos(),comList),"sus_linea"); :}
-| exp:h1                                                {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("LISTA_EXPRESIONES",comList,"sus_linea"); :}
+lista_expresiones ::= lista_expresiones:h1 COMA exp:h2  {: comList=new ArrayList<>(); comList.add(h2); RESULT=new NodoAST("LISTA_EXPRESIONES",unirArrayList(((NodoAST)h1).getHijos(),comList),String.valueOf(h1left), String.valueOf(h1right)); :}
+| exp:h1                                                {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("LISTA_EXPRESIONES",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-reproducir ::= REPRODUCIR PARENTESIS_A lista_expresiones:h1 PARENTESIS_C P_COMA {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("REPRODUCIR",comList,"sus_linea"); :}
+reproducir ::= REPRODUCIR PARENTESIS_A lista_expresiones:h1 PARENTESIS_C P_COMA {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("REPRODUCIR",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-reproducir_exp ::= REPRODUCIR PARENTESIS_A lista_expresiones:h1 PARENTESIS_C   {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("REPRODUCIR_EXP",comList,"sus_linea"); :}
+reproducir_exp ::= REPRODUCIR PARENTESIS_A lista_expresiones:h1 PARENTESIS_C   {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("REPRODUCIR_EXP",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-ordenar ::= ORDENAR PARENTESIS_A ID:h1 COMA ordenes:h2 PARENTESIS_C P_COMA   {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("ORDENAR",comList,"sus_linea"); :}
+ordenar ::= ORDENAR PARENTESIS_A ID:h1 COMA ordenes:h2 PARENTESIS_C P_COMA   {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("ORDENAR",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-ordenar_exp ::= ORDENAR PARENTESIS_A ID:h1 COMA ordenes:h2 PARENTESIS_C      {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("ORDENAR_EXP",comList,"sus_linea"); :}
+ordenar_exp ::= ORDENAR PARENTESIS_A ID:h1 COMA ordenes:h2 PARENTESIS_C      {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("ORDENAR_EXP",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-ordenes ::= ASC_ORD:h1  {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("ORDENES",comList,"sus_linea"); :}
-|DESC_ORD:h1            {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("ORDENES",comList,"sus_linea"); :}
-|PAR_ORD:h1             {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("ORDENES",comList,"sus_linea"); :}
-|IMP_ORD:h1             {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("ORDENES",comList,"sus_linea"); :}
-|PRIM_ORD:h1            {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("ORDENES",comList,"sus_linea"); :}
+ordenes ::= ASC_ORD:h1  {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("ORDENES",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
+|DESC_ORD:h1            {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("ORDENES",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
+|PAR_ORD:h1             {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("ORDENES",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
+|IMP_ORD:h1             {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("ORDENES",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
+|PRIM_ORD:h1            {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("ORDENES",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-sumarizarfun ::= SUMARIZAR PARENTESIS_A ID:h1 PARENTESIS_C P_COMA      {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("SUMARIZARFUN",comList,"sus_linea"); :}
+sumarizarfun ::= SUMARIZAR PARENTESIS_A ID:h1 PARENTESIS_C P_COMA      {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("SUMARIZARFUN",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
 /*| SUMARIZAR PARENTESIS_A lista_llaves PARENTESIS_C P_COMA */
 ;
 
-sumarizarfun_exp ::= SUMARIZAR PARENTESIS_A ID:h1 PARENTESIS_C         {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("SUMARIZARFUN_EXP",comList,"sus_linea"); :}
+sumarizarfun_exp ::= SUMARIZAR PARENTESIS_A ID:h1 PARENTESIS_C         {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("SUMARIZARFUN_EXP",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
 /*| SUMARIZAR PARENTESIS_A lista_llaves PARENTESIS_C */
 ;
 
-esperar ::= ESPERAR PARENTESIS_A lista_expresiones:h1 PARENTESIS_C P_COMA {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("ESPERAR",comList,"sus_linea"); :}
+esperar ::= ESPERAR PARENTESIS_A lista_expresiones:h1 PARENTESIS_C P_COMA {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("ESPERAR",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-longitud ::= LONGITUD PARENTESIS_A ID:h1 PARENTESIS_C P_COMA    {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("LONGITUD",comList,"sus_linea"); :}
-|  LONGITUD PARENTESIS_A exp:h1 PARENTESIS_C:h2 P_COMA             {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("LONGITUD",comList,"sus_linea"); :}
+longitud ::= LONGITUD PARENTESIS_A ID:h1 PARENTESIS_C P_COMA    {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("LONGITUD",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
+|  LONGITUD PARENTESIS_A exp:h1 PARENTESIS_C:h2 P_COMA             {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("LONGITUD",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
 ; 
 
-longitud_exp ::= LONGITUD PARENTESIS_A ID:h1 PARENTESIS_C       {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("LONGITUD_EXP",comList,"sus_linea"); :}
-|  LONGITUD PARENTESIS_A exp:h1 PARENTESIS_C:h2                    {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("LONGITUD_EXP",comList,"sus_linea"); :}
+longitud_exp ::= LONGITUD PARENTESIS_A ID:h1 PARENTESIS_C       {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("LONGITUD_EXP",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
+|  LONGITUD PARENTESIS_A exp:h1 PARENTESIS_C:h2                    {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("LONGITUD_EXP",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
 ; 
 
-continuar ::= CONTINUAR:h1 {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("CONTINUAR",comList,"sus_linea");:} 
+continuar ::= CONTINUAR:h1 {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("CONTINUAR",comList,String.valueOf(h1left), String.valueOf(h1right));:} 
 ;
 
-salir ::= SALIR:h1 {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("SALIR",comList,"sus_linea");:} 
+salir ::= SALIR:h1 {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("SALIR",comList,String.valueOf(h1left), String.valueOf(h1right));:} 
 ; 
 
-hacer_mientras ::= HACER LLAVE_A instrucciones:h1 LLAVE_C MIENTRAS PARENTESIS_A exp:h2 PARENTESIS_C P_COMA {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("HACER_MIENTRAS",comList,"sus_linea");:}
+hacer_mientras ::= HACER LLAVE_A instrucciones:h1 LLAVE_C MIENTRAS PARENTESIS_A exp:h2 PARENTESIS_C P_COMA {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("HACER_MIENTRAS",comList,String.valueOf(h1left), String.valueOf(h1right));:}
 ;
 
-mientras ::= MIENTRAS PARENTESIS_A exp:h1 PARENTESIS_C LLAVE_A instrucciones:h2 LLAVE_C {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("MIENTRAS",comList,"sus_linea");:}
+mientras ::= MIENTRAS PARENTESIS_A exp:h1 PARENTESIS_C LLAVE_A instrucciones:h2 LLAVE_C {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("MIENTRAS",comList,String.valueOf(h1left), String.valueOf(h1right));:}
 ;
 
-para ::= PARA PARENTESIS_A declaracion_variable:h1 exp:h2 P_COMA asignacion_para:h3 PARENTESIS_C LLAVE_A instrucciones:h4 LLAVE_C {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); comList.add(h4); RESULT=new NodoAST("PARA",comList,"sus_linea");:}
-| PARA PARENTESIS_A asignacion:h1 exp:h2 P_COMA asignacion_para:h3 PARENTESIS_C LLAVE_A instrucciones:h4 LLAVE_C:h5    {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); comList.add(h4); comList.add(h5); RESULT=new NodoAST("PARA",comList,"sus_linea");:}
+para ::= PARA PARENTESIS_A declaracion_variable:h1 exp:h2 P_COMA asignacion_para:h3 PARENTESIS_C LLAVE_A instrucciones:h4 LLAVE_C {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); comList.add(h4); RESULT=new NodoAST("PARA",comList,String.valueOf(h1left), String.valueOf(h1right));:}
+| PARA PARENTESIS_A asignacion:h1 exp:h2 P_COMA asignacion_para:h3 PARENTESIS_C LLAVE_A instrucciones:h4 LLAVE_C:h5    {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); comList.add(h4); comList.add(h5); RESULT=new NodoAST("PARA",comList,String.valueOf(h1left), String.valueOf(h1right));:}
 ;
 
-declaracion_variable ::= KEEP:h1 variable:h2    {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("DECLARACION_VARIABLE",comList,"sus_linea");:}
-| variable:h1                                   {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("DECLARACION_VARIABLE",comList,"sus_linea");:} 
+declaracion_variable ::= KEEP:h1 variable:h2    {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("DECLARACION_VARIABLE",comList,String.valueOf(h1left), String.valueOf(h1right));:}
+| variable:h1                                   {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("DECLARACION_VARIABLE",comList,String.valueOf(h1left), String.valueOf(h1right));:} 
 ;
 
-variable ::= VAR:h1 tipo_variable_nativa:h2 def_variables:h3    {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT= new NodoAST("VARIABLE", comList,"sus_linea");:}
-| VAR:h1 tipo_variable_nativa:h2 ARREGLO:h3 def_arreglo:h4  {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); comList.add(h4); RESULT= new NodoAST("VARIABLE", comList,"sus_linea");:}
+variable ::= VAR:h1 tipo_variable_nativa:h2 def_variables:h3    {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT= new NodoAST("VARIABLE", comList,String.valueOf(h1left), String.valueOf(h1right));:}
+| VAR:h1 tipo_variable_nativa:h2 ARREGLO:h3 def_arreglo:h4  {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); comList.add(h4); RESULT= new NodoAST("VARIABLE", comList,String.valueOf(h1left), String.valueOf(h1right));:}
 ;
 
-def_arreglo ::= ID:h1 lista_def_arreglo:h2 {: comList = new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("DEF_ARREGLO", unirArrayList(comList, ((NodoAST)h2).getHijos()), "sus_linea"); :}
+def_arreglo ::= ID:h1 lista_def_arreglo:h2 {: comList = new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("DEF_ARREGLO", unirArrayList(comList, ((NodoAST)h2).getHijos()), String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-lista_def_arreglo ::= lista_corchetes:h1 def_arreglo_valores:h2   {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT = new NodoAST("LISTA_DEF_ARREGLO", comList, "sus_linea"); :}
+lista_def_arreglo ::= lista_corchetes:h1 def_arreglo_valores:h2   {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT = new NodoAST("LISTA_DEF_ARREGLO", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
 | COMA def_arreglo:h1  {: RESULT=h1; :}
 ;
 
-lista_corchetes ::= lista_corchetes:h1 CORCHETE_A arreglo_lenght:h2 CORCHETE_C {: comList=new ArrayList<>(); comList.add(h2); RESULT = new NodoAST("LISTA_CORCHETES", unirArrayList(((NodoAST)h1).getHijos(), comList), "sus_linea"); :}
-| CORCHETE_A arreglo_lenght:h1 CORCHETE_C {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("LISTA_CORCHETES",comList,"sus_linea"); :}
+lista_corchetes ::= lista_corchetes:h1 CORCHETE_A arreglo_lenght:h2 CORCHETE_C {: comList=new ArrayList<>(); comList.add(h2); RESULT = new NodoAST("LISTA_CORCHETES", unirArrayList(((NodoAST)h1).getHijos(), comList), String.valueOf(h1left), String.valueOf(h1right)); :}
+| CORCHETE_A arreglo_lenght:h1 CORCHETE_C {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("LISTA_CORCHETES",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-arreglo_lenght ::= exp:h1   {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("ARREGLO_LENGHT",comList,"sus_linea"); :}
-|                           {: comList=new ArrayList<>(); RESULT=new NodoAST("ARREGLO_LENGHT",comList,"sus_linea"); :}
+arreglo_lenght ::= exp:h1   {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("ARREGLO_LENGHT",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
+|                           {: comList=new ArrayList<>(); RESULT=new NodoAST("ARREGLO_LENGHT",comList,"---","---"); :}
 ;
 
-def_arreglo_valores ::= P_COMA              {: comList=new ArrayList<>(); RESULT = new NodoAST("DEF_ARREGLO_VALORES", comList, "sus_linea"); :}   
-| ASIGNACION lista_llaves:h1 P_COMA         {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("DEF_ARREGLO_VALORES", comList, "sus_linea"); :}       
+def_arreglo_valores ::= P_COMA:h1              {: comList=new ArrayList<>(); RESULT = new NodoAST("DEF_ARREGLO_VALORES", comList, String.valueOf(h1left), String.valueOf(h1right)); :}   
+| ASIGNACION lista_llaves:h1 P_COMA         {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("DEF_ARREGLO_VALORES", comList, String.valueOf(h1left), String.valueOf(h1right)); :}       
 ;
 
-lista_llaves ::= lista_llaves:h1 COMA LLAVE_A valores_arreglo:h2 LLAVE_C {: comList=new ArrayList<>(); comList.add(h2); RESULT = new NodoAST("LISTA_LLAVES", unirArrayList(((NodoAST)h1).getHijos(), comList), "sus_linea"); :}
-| LLAVE_A valores_arreglo:h1 LLAVE_C    {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("LISTA_LLAVES",comList,"sus_linea"); :}
+lista_llaves ::= lista_llaves:h1 COMA LLAVE_A valores_arreglo:h2 LLAVE_C {: comList=new ArrayList<>(); comList.add(h2); RESULT = new NodoAST("LISTA_LLAVES", unirArrayList(((NodoAST)h1).getHijos(), comList), String.valueOf(h1left), String.valueOf(h1right)); :}
+| LLAVE_A valores_arreglo:h1 LLAVE_C    {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("LISTA_LLAVES",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-valores_arreglo ::= lista_expresiones:h1   {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("VALORES_ARREGLO", comList, "sus_linea"); :}
+valores_arreglo ::= lista_expresiones:h1   {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("VALORES_ARREGLO", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
 | lista_llaves:h1  {: RESULT=h1; :}
-|   {: comList=new ArrayList<>(); RESULT = new NodoAST("VALORES_ARREGLO", comList, "sus_linea"); :}
+|   {: comList=new ArrayList<>(); RESULT = new NodoAST("VALORES_ARREGLO", comList, "---","---"); :}
 ;
 
-def_variables ::= ID:h1 lista_variables:h2      {: comList = new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("DEF_VARIABLE", unirArrayList(comList, ((NodoAST)h2).getHijos()), "sus_linea"); :}
+def_variables ::= ID:h1 lista_variables:h2      {: comList = new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("DEF_VARIABLE", unirArrayList(comList, ((NodoAST)h2).getHijos()), String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-lista_variables ::= ASIGNACION exp:h1 P_COMA    {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("LISTA_VARIABLES", comList, "sus_linea"); :}
+lista_variables ::= ASIGNACION exp:h1 P_COMA    {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("LISTA_VARIABLES", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
 | COMA def_variables:h1                         {: RESULT=h1; :}
-| P_COMA                                        {: comList = new ArrayList<>(); RESULT= new NodoAST("LISTA_VARIABLES", comList, "sus_linea"); :}
+| P_COMA:h1                                     {: comList = new ArrayList<>(); RESULT= new NodoAST("LISTA_VARIABLES", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-declaracion_funcion ::= KEEP:h1 tipo_variable_nativa:h2 ID:h3 PARENTESIS_A s1:h4    {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); comList.add(h4); RESULT=new NodoAST("DECLARACION_FUNCION",comList,"sus_linea"); :}
-| tipo_variable_nativa:h1 ID:h2 PARENTESIS_A s1:h3                                  {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT=new NodoAST("DECLARACION_FUNCION",comList,"sus_linea"); :}
+declaracion_funcion ::= KEEP:h1 tipo_variable_nativa:h2 ID:h3 PARENTESIS_A s1:h4    {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); comList.add(h4); RESULT=new NodoAST("DECLARACION_FUNCION",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
+| tipo_variable_nativa:h1 ID:h2 PARENTESIS_A s1:h3                                  {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT=new NodoAST("DECLARACION_FUNCION",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-s1 ::= PARENTESIS_C s2:h1                       {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("S1",comList,"sus_linea"); :}
-| lista_parametros:h1 PARENTESIS_C s2:h2        {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("S1",comList,"sus_linea"); :}
+s1 ::= PARENTESIS_C s2:h1                       {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("S1",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
+| lista_parametros:h1 PARENTESIS_C s2:h2        {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("S1",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-s2 ::= LLAVE_A instrucciones:h1 LLAVE_C {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("S2",comList,"sus_linea"); :}
+s2 ::= LLAVE_A instrucciones:h1 LLAVE_C {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("S2",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
 ;   
 
-lista_parametros ::= lista_parametros:h1 COMA parametro:h2 {: comList=new ArrayList<>(); comList.add(h2); RESULT = new NodoAST("LISTA_PARAMETROS", unirArrayList(((NodoAST)h1).getHijos(), comList), "sus_linea"); :}
-| parametro:h1 {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("LISTA_PARAMETROS",comList,"sus_linea"); :}
+lista_parametros ::= lista_parametros:h1 COMA parametro:h2 {: comList=new ArrayList<>(); comList.add(h2); RESULT = new NodoAST("LISTA_PARAMETROS", unirArrayList(((NodoAST)h1).getHijos(), comList), String.valueOf(h1left), String.valueOf(h1right)); :}
+| parametro:h1 {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("LISTA_PARAMETROS",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-parametro ::= tipo_variable_nativa:h1 ID:h2 {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("PARAMETRO",comList,"sus_linea"); :}
+parametro ::= tipo_variable_nativa:h1 ID:h2 {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("PARAMETRO",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-tipo_variable_nativa ::= ENTERO:h1  {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList(); comList2.add(new NodoAST("ENTERO", comList, "sus_linea")); RESULT= new NodoAST("TIPOS_VARIABLE_NATIVA",comList2,"sus_linea"); :}
-| DOBLE:h1                          {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList(); comList2.add(new NodoAST("DOBLE", comList, "sus_linea")); RESULT= new NodoAST("TIPOS_VARIABLE_NATIVA",comList2,"sus_linea"); :}
-| CARACTER:h1                       {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList(); comList2.add(new NodoAST("CARACTER", comList, "sus_linea")); RESULT= new NodoAST("TIPOS_VARIABLE_NATIVA",comList2,"sus_linea"); :}
-| CADENA:h1                         {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList(); comList2.add(new NodoAST("CADENA", comList, "sus_linea")); RESULT= new NodoAST("TIPOS_VARIABLE_NATIVA",comList2,"sus_linea"); :}
-| BOOLEAN:h1                        {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList(); comList2.add(new NodoAST("BOOLEAN", comList, "sus_linea")); RESULT= new NodoAST("TIPOS_VARIABLE_NATIVA",comList2,"sus_linea"); :}
+tipo_variable_nativa ::= ENTERO:h1  {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList(); comList2.add(new NodoAST("ENTERO", comList, String.valueOf(h1left), String.valueOf(h1right))); RESULT= new NodoAST("TIPOS_VARIABLE_NATIVA",comList2,String.valueOf(h1left), String.valueOf(h1right)); :}
+| DOBLE:h1                          {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList(); comList2.add(new NodoAST("DOBLE", comList, String.valueOf(h1left), String.valueOf(h1right))); RESULT= new NodoAST("TIPOS_VARIABLE_NATIVA",comList2,String.valueOf(h1left), String.valueOf(h1right)); :}
+| CARACTER:h1                       {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList(); comList2.add(new NodoAST("CARACTER", comList, String.valueOf(h1left), String.valueOf(h1right))); RESULT= new NodoAST("TIPOS_VARIABLE_NATIVA",comList2,String.valueOf(h1left), String.valueOf(h1right)); :}
+| CADENA:h1                         {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList(); comList2.add(new NodoAST("CADENA", comList, String.valueOf(h1left), String.valueOf(h1right))); RESULT= new NodoAST("TIPOS_VARIABLE_NATIVA",comList2,String.valueOf(h1left), String.valueOf(h1right)); :}
+| BOOLEAN:h1                        {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList(); comList2.add(new NodoAST("BOOLEAN", comList, String.valueOf(h1left), String.valueOf(h1right))); RESULT= new NodoAST("TIPOS_VARIABLE_NATIVA",comList2,String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
 dec_id ::= ID
 ;
 
-tipo_igual ::= ASIGNACION:h1                {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList(); comList2.add(new NodoAST("ASIGNACION_VAL", comList, "sus_linea")); RESULT= new NodoAST("TIPO_IGUAL",comList2,"sus_linea"); :}
-| MAS:h1 ASIGNACION:h2                      {: comList=new ArrayList<>(); comList.add(h1+""+h2); comList2=new ArrayList(); comList2.add(new NodoAST("MAS_ASIGNACION", comList, "sus_linea")); RESULT= new NodoAST("TIPO_IGUAL",comList2,"sus_linea"); :}
-| MENOS:h1 ASIGNACION:h2                    {: comList=new ArrayList<>(); comList.add(h1+""+h2); comList2=new ArrayList(); comList2.add(new NodoAST("MENOS_ASIGNACION", comList, "sus_linea")); RESULT= new NodoAST("TIPO_IGUAL",comList2,"sus_linea"); :}
+tipo_igual ::= ASIGNACION:h1                {: comList=new ArrayList<>(); comList.add(h1); comList2=new ArrayList(); comList2.add(new NodoAST("ASIGNACION_VAL", comList, String.valueOf(h1left), String.valueOf(h1right))); RESULT= new NodoAST("TIPO_IGUAL",comList2,String.valueOf(h1left), String.valueOf(h1right)); :}
+| MAS:h1 ASIGNACION:h2                      {: comList=new ArrayList<>(); comList.add(h1+""+h2); comList2=new ArrayList(); comList2.add(new NodoAST("MAS_ASIGNACION", comList, String.valueOf(h1left), String.valueOf(h1right))); RESULT= new NodoAST("TIPO_IGUAL",comList2,String.valueOf(h1left), String.valueOf(h1right)); :}
+| MENOS:h1 ASIGNACION:h2                    {: comList=new ArrayList<>(); comList.add(h1+""+h2); comList2=new ArrayList(); comList2.add(new NodoAST("MENOS_ASIGNACION", comList, String.valueOf(h1left), String.valueOf(h1right))); RESULT= new NodoAST("TIPO_IGUAL",comList2,String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-asignacion_para ::= ID:h1 tipo_igual:h2 exp:h3      {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("ASIGNACION_PARA", comList, "sus_linea");:}
-|  ID:h1 INCREMENTO:h2                              {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2);  RESULT = new NodoAST("ASIGNACION_PARA", comList, "sus_linea");:}
-|  ID:h1 DECREMENTO:h2                              {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2);  RESULT = new NodoAST("ASIGNACION_PARA", comList, "sus_linea");:}
+asignacion_para ::= ID:h1 tipo_igual:h2 exp:h3      {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("ASIGNACION_PARA", comList, String.valueOf(h1left), String.valueOf(h1right));:}
+|  ID:h1 INCREMENTO:h2                              {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2);  RESULT = new NodoAST("ASIGNACION_PARA", comList, String.valueOf(h1left), String.valueOf(h1right));:}
+|  ID:h1 DECREMENTO:h2                              {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2);  RESULT = new NodoAST("ASIGNACION_PARA", comList, String.valueOf(h1left), String.valueOf(h1right));:}
 ;
 
 
-lista_corchetes_asignacion ::= lista_corchetes_asignacion:h1 CORCHETE_A exp:h2 CORCHETE_C {: comList=new ArrayList<>(); comList.add(h2); RESULT = new NodoAST("LISTA_CORCHETES_ASIGNACION", unirArrayList(((NodoAST)h1).getHijos(), comList), "sus_linea"); :}
-| CORCHETE_A exp:h1 CORCHETE_C {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("LISTA_CORCHETES_ASIGNACION",comList,"sus_linea"); :}
+lista_corchetes_asignacion ::= lista_corchetes_asignacion:h1 CORCHETE_A exp:h2 CORCHETE_C {: comList=new ArrayList<>(); comList.add(h2); RESULT = new NodoAST("LISTA_CORCHETES_ASIGNACION", unirArrayList(((NodoAST)h1).getHijos(), comList), String.valueOf(h1left), String.valueOf(h1right)); :}
+| CORCHETE_A exp:h1 CORCHETE_C {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("LISTA_CORCHETES_ASIGNACION",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-asignacion ::= ID:h1 tipo_igual:h2 exp:h3 P_COMA     {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("ASIGNACION", comList, "sus_linea"); :}
-|  ID:h1 lista_corchetes_asignacion:h2 tipo_igual:h3 exp:h4 P_COMA  {:comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); comList.add(h4); RESULT = new NodoAST("ASIGNACION", comList, "sus_linea");:}
-|  ID:h1 INCREMENTO:h2 P_COMA                              {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2);  RESULT = new NodoAST("ASIGNACION", comList, "sus_linea");:}
-|  ID:h1 DECREMENTO:h2 P_COMA                              {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2);  RESULT = new NodoAST("ASIGNACION", comList, "sus_linea");:}
+asignacion ::= ID:h1 tipo_igual:h2 exp:h3 P_COMA     {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("ASIGNACION", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
+|  ID:h1 lista_corchetes_asignacion:h2 tipo_igual:h3 exp:h4 P_COMA  {:comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); comList.add(h4); RESULT = new NodoAST("ASIGNACION", comList, String.valueOf(h1left), String.valueOf(h1right));:}
+|  ID:h1 INCREMENTO:h2 P_COMA                              {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2);  RESULT = new NodoAST("ASIGNACION", comList, String.valueOf(h1left), String.valueOf(h1right));:}
+|  ID:h1 DECREMENTO:h2 P_COMA                              {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2);  RESULT = new NodoAST("ASIGNACION", comList, String.valueOf(h1left), String.valueOf(h1right));:}
 ;
 
-switch ::= SWITCH PARENTESIS_A exp:h1 PARENTESIS_C LLAVE_A lista_casos:h2 LLAVE_C {: comList=new ArrayList(); comList.add(h1); comList.add(h2); RESULT = new NodoAST("SWITCH", comList, "sus_linea"); :}
+switch ::= SWITCH PARENTESIS_A exp:h1 PARENTESIS_C LLAVE_A lista_casos:h2 LLAVE_C {: comList=new ArrayList(); comList.add(h1); comList.add(h2); RESULT = new NodoAST("SWITCH", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-lista_casos ::= lista_casos:h1 caso:h2  {: comList=new ArrayList<>(); comList.add(h2); RESULT = new NodoAST("LISTA_CASOS", unirArrayList(((NodoAST)h1).getHijos(), comList), "sus_linea"); :}
-| caso:h1                               {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("LISTA_CASOS", comList, "sus_linea"); :}
-| default:h1                            {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("LISTA_CASOS", comList, "sus_linea"); :}
-| lista_casos:h1 default:h2             {: comList=new ArrayList<>(); comList.add(h2); RESULT = new NodoAST("LISTA_CASOS", unirArrayList(((NodoAST)h1).getHijos(), comList), "sus_linea"); :}
+lista_casos ::= lista_casos:h1 caso:h2  {: comList=new ArrayList<>(); comList.add(h2); RESULT = new NodoAST("LISTA_CASOS", unirArrayList(((NodoAST)h1).getHijos(), comList), String.valueOf(h1left), String.valueOf(h1right)); :}
+| caso:h1                               {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("LISTA_CASOS", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
+| default:h1                            {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("LISTA_CASOS", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
+| lista_casos:h1 default:h2             {: comList=new ArrayList<>(); comList.add(h2); RESULT = new NodoAST("LISTA_CASOS", unirArrayList(((NodoAST)h1).getHijos(), comList), String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-caso ::= CASO exp:h1 DOS_PUNTOS instrucciones:h2    {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT = new NodoAST("CASO", comList, "sus_linea"); :}
+caso ::= CASO exp:h1 DOS_PUNTOS instrucciones:h2    {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT = new NodoAST("CASO", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-default ::= DEFAULT DOS_PUNTOS instrucciones:h1     {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("DEFAULT", comList, "sus_linea"); :}
+default ::= DEFAULT DOS_PUNTOS instrucciones:h1     {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("DEFAULT", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-instruccion_si ::= si:h1            {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("INSTRUCCION_SI", comList, "sus_linea"); :}
-| si:h1 sino:h2                     {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT = new NodoAST("INSTRUCCION_SI", comList, "sus_linea"); :}
-| si:h1 lista_sino_si:h2            {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT = new NodoAST("INSTRUCCION_SI", comList, "sus_linea"); :}
-| si:h1 lista_sino_si:h2 sino:h3    {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("INSTRUCCION_SI", comList, "sus_linea"); :}
+instruccion_si ::= si:h1            {: comList=new ArrayList<>(); comList.add(h1); RESULT = new NodoAST("INSTRUCCION_SI", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
+| si:h1 sino:h2                     {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT = new NodoAST("INSTRUCCION_SI", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
+| si:h1 lista_sino_si:h2            {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT = new NodoAST("INSTRUCCION_SI", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
+| si:h1 lista_sino_si:h2 sino:h3    {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); comList.add(h3); RESULT = new NodoAST("INSTRUCCION_SI", comList, String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-si ::= SI PARENTESIS_A exp:h1 PARENTESIS_C LLAVE_A instrucciones:h2 LLAVE_C {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("SI",comList,"sus_linea"); :}
+si ::= SI PARENTESIS_A exp:h1 PARENTESIS_C LLAVE_A instrucciones:h2 LLAVE_C {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("SI",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-sino ::= SINO LLAVE_A instrucciones:h1 LLAVE_C {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("SINO",comList,"sus_linea"); :}
+sino ::= SINO LLAVE_A instrucciones:h1 LLAVE_C {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("SINO",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-sino_si ::= SINO SI PARENTESIS_A exp:h1 PARENTESIS_C  LLAVE_A instrucciones:h2 LLAVE_C {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("SINO_SI",comList,"sus_linea"); :}
+sino_si ::= SINO SI PARENTESIS_A exp:h1 PARENTESIS_C  LLAVE_A instrucciones:h2 LLAVE_C {: comList=new ArrayList<>(); comList.add(h1); comList.add(h2); RESULT=new NodoAST("SINO_SI",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
 ;
 
-lista_sino_si ::= lista_sino_si:h1 sino_si:h2 {: comList=new ArrayList<>(); comList.add(h2); RESULT = new NodoAST("LISTA_SINO_SI", unirArrayList(((NodoAST)h1).getHijos(), comList), "sus_linea"); :}
-| sino_si:h1 {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("LISTA_SINO_SI",comList,"sus_linea"); :}
+lista_sino_si ::= lista_sino_si:h1 sino_si:h2 {: comList=new ArrayList<>(); comList.add(h2); RESULT = new NodoAST("LISTA_SINO_SI", unirArrayList(((NodoAST)h1).getHijos(), comList), String.valueOf(h1left), String.valueOf(h1right)); :}
+| sino_si:h1 {: comList=new ArrayList<>(); comList.add(h1); RESULT=new NodoAST("LISTA_SINO_SI",comList,String.valueOf(h1left), String.valueOf(h1right)); :}
 ;

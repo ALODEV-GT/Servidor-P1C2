@@ -7,14 +7,16 @@ public class NodoAST {
     private String etiqueta;
     private ArrayList<Object> hijos = new ArrayList<>();
     private String linea;
+    private String columna;
 
     public void agregarHijo(Object hijo) {
         this.hijos.add(hijo);
     }
 
-    public NodoAST(String etiqueta, ArrayList<Object> hijos, String linea) {
+    public NodoAST(String etiqueta, ArrayList<Object> hijos, String columna, String linea) {
         this.etiqueta = etiqueta;
         this.hijos = hijos;
+        this.columna = columna;
         this.linea = linea;
     }
 

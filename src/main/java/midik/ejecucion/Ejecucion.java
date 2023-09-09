@@ -60,7 +60,6 @@ import midik.musica.CanalThread;
 public class Ejecucion {
 
     private NodoAST raiz;
-    private Integer contador;
 
     public Ejecucion(NodoAST raiz) {
         this.raiz = raiz;
@@ -68,6 +67,12 @@ public class Ejecucion {
 
     public void ejecutar() {
         ArrayList<Instruccion> instrucciones = (ArrayList<Instruccion>) this.recorrer(this.raiz);
+
+        //Verificar si hay errores antes de ejecutar
+        ArrayList<midik.Singletons.Error> errores = Errores.getInstance().getErrors();
+        if (!errores.isEmpty()) {
+            return;
+        }
 
         //Comprobar instrucciones padre
         boolean validoInstPadres = verificarInstruccionesPadre(instrucciones);
@@ -77,42 +82,15 @@ public class Ejecucion {
         }
 
         if (nunPrinciapal == 1) {
-            Instruccion inst = instrucciones.get(0);
+            Instruccion inst = this.econtrarFuncionPrincipal(instrucciones);
             LlamadaFuncion llamFuncionPrincipal = new LlamadaFuncion(inst.getLinea(), "Principal", null);
             instrucciones.add(llamFuncionPrincipal);
         }
 
         Entorno entornoGlobal = new Entorno(null);
 
-        for (Instruccion instruccion :  instrucciones) {
+        for (Instruccion instruccion : instrucciones) {
             instruccion.ejecutar(entornoGlobal);
-        }
-
-        //Impresion de variables en el entorno global
-        Map<String, Variable> variables = entornoGlobal.getVariables();
-        Iterator<String> iterator = variables.keySet().iterator();
-        while (iterator.hasNext()) {
-            String key = iterator.next();
-            Variable valor = variables.get(key);
-            System.out.println(valor);
-        }
-
-        //Impresion de Funciones en el entorno global
-        Map<String, Funcion> funciones = entornoGlobal.getFunciones();
-        Iterator<String> iteratorF = funciones.keySet().iterator();
-        while (iteratorF.hasNext()) {
-            String key = iteratorF.next();
-            Funcion valor = funciones.get(key);
-            System.out.println(valor);
-        }
-
-        //Impresion de Arreglos en el entorno global
-        Map<String, Arreglo> arreglos = entornoGlobal.getArreglos();
-        Iterator<String> iteratorA = arreglos.keySet().iterator();
-        while (iteratorA.hasNext()) {
-            String key = iteratorA.next();
-            Arreglo valor = arreglos.get(key);
-            System.out.println(valor);
         }
 
         //Ejecucion de musica
@@ -129,6 +107,15 @@ public class Ejecucion {
 
     }
 
+    private Instruccion econtrarFuncionPrincipal(ArrayList<Instruccion> instrucciones) {
+        for (Instruccion inst : instrucciones) {
+            if (inst instanceof Principal) {
+                return inst;
+            }
+        }
+        return null;
+    }
+
     private boolean verificarInstruccionesPadre(ArrayList<Instruccion> instrucciones) {
         boolean valido = true;
         for (Instruccion inst : instrucciones) {
@@ -142,18 +129,18 @@ public class Ejecucion {
     }
 
     private int cantidadFuncionPrincipal(ArrayList<Instruccion> instrucciones) {
-        int contador = 0;
+        int cont = 0;
         for (Instruccion inst : instrucciones) {
             if (inst instanceof Principal) {
-                contador++;
+                cont++;
             }
 
-            if (contador > 1) {
+            if (cont > 1) {
                 Errores.getInstance().push(new midik.Singletons.Error("Semantico ", inst.getLinea(), "Solo puedes declarar una unica vez la funcion principal"));
                 break;
             }
         }
-        return contador;
+        return cont;
     }
 
     private Object recorrer(Object nodo) {
