@@ -60,6 +60,7 @@ import midik.musica.CanalThread;
 public class Ejecucion {
 
     private NodoAST raiz;
+    private String nombrePista;
 
     public Ejecucion(NodoAST raiz) {
         this.raiz = raiz;
@@ -146,7 +147,15 @@ public class Ejecucion {
     private Object recorrer(Object nodo) {
         //INICIO
         if (this.soyNodo("S", nodo)) {
+            this.recorrer(((NodoAST) nodo).getHijos().get(0));
             return this.recorrer(((NodoAST) nodo).getHijos().get(1));
+        }
+
+        //ADD_EXTENDER
+        if (this.soyNodo("ADD_EXTENDER", nodo)) {
+            NodoAST nodoA = (NodoAST) nodo;
+            String pista = (String) nodoA.getHijos().get(0);
+            this.nombrePista = pista;
         }
 
         //INSTRUCCIONES
@@ -1028,6 +1037,10 @@ public class Ejecucion {
         ArrayList<Object> listaUnida = new ArrayList<>(lista1);
         listaUnida.addAll(lista2);
         return listaUnida;
+    }
+
+    public String getNombrePista() {
+        return nombrePista;
     }
 
 }

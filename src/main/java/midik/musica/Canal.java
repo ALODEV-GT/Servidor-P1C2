@@ -1,8 +1,9 @@
 package midik.musica;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Canal {
+public class Canal implements Serializable {
 
     private int numCanal;
     private ArrayList<Nota> notas = new ArrayList<>();
@@ -33,9 +34,21 @@ public class Canal {
         return tiempos;
     }
 
+    public long getTiempoTotal() {
+        long tiempos =0;
+        for (int i = 0; i < this.notas.size(); i++) {
+            tiempos += this.notas.get(i).getTiempo();
+        }
+        return tiempos;
+    }
+
     public boolean estaEnLaListaNegra(Nota nota) {
         int midi = nota.getRepMidi();
-        return midi < 21 || midi > 108;
+        if (midi == 0) {
+            return false;
+        } else {
+            return midi < 21 || midi > 108;
+        }
     }
 
 }

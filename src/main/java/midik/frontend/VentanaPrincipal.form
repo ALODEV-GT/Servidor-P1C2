@@ -17,6 +17,14 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem1ActionPerformed"/>
               </Events>
             </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem2">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Guardar"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem2ActionPerformed"/>
+              </Events>
+            </MenuItem>
           </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="ayudajM">
@@ -50,17 +58,17 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="jTabbedPane1" alignment="1" max="32767" attributes="0"/>
+          <Component id="principalJTP" alignment="1" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="jTabbedPane1" alignment="1" max="32767" attributes="0"/>
+          <Component id="principalJTP" alignment="1" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Container class="javax.swing.JTabbedPane" name="jTabbedPane1">
+    <Container class="javax.swing.JTabbedPane" name="principalJTP">
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
       <SubComponents>
@@ -78,7 +86,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jPanel6" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="56" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -101,28 +109,44 @@
                                   <Component id="crearBtn" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
                                   <Component id="modificarBtn" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                  <Component id="reproducirBtn" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="eliminarBtn" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="32767" attributes="0"/>
                               </Group>
                               <Group type="102" attributes="0">
-                                  <Component id="jScrollPane4" min="-2" pref="325" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="jScrollPane4" min="-2" pref="325" max="-2" attributes="0"/>
+                                      <Component id="jLabel2" min="-2" pref="122" max="-2" attributes="0"/>
+                                  </Group>
                                   <EmptySpace min="-2" pref="37" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
-                                          <Group type="102" attributes="0">
-                                              <Component id="modificarBtnCentral" min="-2" pref="124" max="-2" attributes="0"/>
-                                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                              <Component id="eliminarBtnCentral" min="-2" pref="118" max="-2" attributes="0"/>
-                                          </Group>
-                                          <Component id="jScrollPane6" max="32767" attributes="0"/>
-                                          <Component id="jScrollPane5" alignment="0" max="32767" attributes="0"/>
+                                      <Group type="102" attributes="0">
+                                          <Component id="crearListaTf" min="-2" pref="143" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="crearListaBtn" min="-2" pref="93" max="-2" attributes="0"/>
+                                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                       </Group>
-                                      <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                              <Component id="jScrollPane5" alignment="0" pref="0" max="32767" attributes="0"/>
+                                              <Component id="jScrollPane6" alignment="0" pref="0" max="32767" attributes="0"/>
+                                              <Component id="jLabel3" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              <Group type="102" alignment="0" attributes="0">
+                                                  <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                                      <Group type="102" alignment="0" attributes="0">
+                                                          <Component id="modificarBtnCentral" min="-2" pref="71" max="-2" attributes="0"/>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Component id="jButton1" max="32767" attributes="0"/>
+                                                      </Group>
+                                                      <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                  </Group>
+                                                  <EmptySpace max="-2" attributes="0"/>
+                                                  <Component id="eliminarBtnCentral" min="-2" pref="103" max="-2" attributes="0"/>
+                                              </Group>
+                                          </Group>
+                                          <EmptySpace max="32767" attributes="0"/>
+                                      </Group>
                                   </Group>
-                                  <EmptySpace pref="56" max="32767" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Group type="102" alignment="1" attributes="0">
                                           <Component id="playBtn" min="-2" pref="158" max="-2" attributes="0"/>
@@ -146,42 +170,51 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                              <Component id="jScrollPane4" min="-2" pref="503" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="1" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <Component id="jScrollPane7" min="-2" pref="217" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="101" max="-2" attributes="0"/>
+                                  <Component id="playBtn" min="-2" pref="143" max="-2" attributes="0"/>
+                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <Component id="repetirCb" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
+                              </Group>
                               <Group type="102" alignment="1" attributes="0">
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="crearListaTf" alignment="3" min="-2" pref="27" max="-2" attributes="0"/>
+                                      <Component id="crearListaBtn" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Group type="102" attributes="0">
-                                          <Component id="jScrollPane5" min="-2" pref="199" max="-2" attributes="0"/>
-                                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                          <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="jScrollPane5" min="-2" pref="166" max="-2" attributes="0"/>
+                                          <EmptySpace type="separate" max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="3" attributes="0">
                                               <Component id="modificarBtnCentral" alignment="3" min="-2" max="-2" attributes="0"/>
                                               <Component id="eliminarBtnCentral" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
                                           </Group>
-                                          <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
+                                          <EmptySpace pref="11" max="32767" attributes="0"/>
                                           <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="jScrollPane6" min="-2" pref="205" max="-2" attributes="0"/>
+                                          <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
                                       </Group>
-                                      <Component id="jScrollPane7" min="-2" pref="217" max="-2" attributes="0"/>
-                                  </Group>
-                                  <EmptySpace max="32767" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="jScrollPane6" alignment="1" min="-2" pref="228" max="-2" attributes="0"/>
-                                      <Group type="102" alignment="1" attributes="0">
-                                          <Component id="playBtn" min="-2" pref="143" max="-2" attributes="0"/>
-                                          <EmptySpace type="separate" max="-2" attributes="0"/>
-                                          <Component id="repetirCb" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
-                                      </Group>
+                                      <Component id="jScrollPane4" min="-2" pref="477" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                           </Group>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="crearBtn" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="modificarBtn" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="reproducirBtn" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="eliminarBtn" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="crearBtn" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="modificarBtn" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <Component id="eliminarBtn" alignment="0" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="28" max="32767" attributes="0"/>
+                          <EmptySpace pref="18" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -197,13 +230,7 @@
                     <Component class="javax.swing.JList" name="listIzq">
                       <Properties>
                         <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.editors2.ListModelEditor">
-                          <StringArray count="5">
-                            <StringItem index="0" value="Item 1"/>
-                            <StringItem index="1" value="Item 2"/>
-                            <StringItem index="2" value="Item 3"/>
-                            <StringItem index="3" value="Item 4"/>
-                            <StringItem index="4" value="Item 5"/>
-                          </StringArray>
+                          <StringArray count="0"/>
                         </Property>
                       </Properties>
                       <AuxValues>
@@ -222,13 +249,7 @@
                     <Component class="javax.swing.JList" name="listCentralUp">
                       <Properties>
                         <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.editors2.ListModelEditor">
-                          <StringArray count="5">
-                            <StringItem index="0" value="Item 1"/>
-                            <StringItem index="1" value="Item 2"/>
-                            <StringItem index="2" value="Item 3"/>
-                            <StringItem index="3" value="Item 4"/>
-                            <StringItem index="4" value="Item 5"/>
-                          </StringArray>
+                          <StringArray count="0"/>
                         </Property>
                       </Properties>
                       <AuxValues>
@@ -247,13 +268,7 @@
                     <Component class="javax.swing.JList" name="listCentralDown">
                       <Properties>
                         <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.editors2.ListModelEditor">
-                          <StringArray count="5">
-                            <StringItem index="0" value="Item 1"/>
-                            <StringItem index="1" value="Item 2"/>
-                            <StringItem index="2" value="Item 3"/>
-                            <StringItem index="3" value="Item 4"/>
-                            <StringItem index="4" value="Item 5"/>
-                          </StringArray>
+                          <StringArray count="0"/>
                         </Property>
                       </Properties>
                       <AuxValues>
@@ -271,35 +286,45 @@
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Crear"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="crearBtnActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="modificarBtn">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Modificar"/>
                   </Properties>
-                </Component>
-                <Component class="javax.swing.JButton" name="reproducirBtn">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" value="Reproducir"/>
-                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="modificarBtnActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="eliminarBtn">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Eliminar"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="eliminarBtnActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="modificarBtnCentral">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Modificar"/>
+                    <Property name="text" type="java.lang.String" value="+"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="modificarBtnCentralActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="eliminarBtnCentral">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Eliminar"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="eliminarBtnCentralActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JLabel" name="jLabel1">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Listas de Reproduccion"/>
+                    <Property name="text" type="java.lang.String" value="Canciones en la lista"/>
                   </Properties>
                 </Component>
                 <Container class="javax.swing.JScrollPane" name="jScrollPane7">
@@ -319,6 +344,34 @@
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="repetirCbActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabel2">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Canciones"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabel3">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Listas"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JTextField" name="crearListaTf">
+                </Component>
+                <Component class="javax.swing.JButton" name="crearListaBtn">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Crear"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="crearListaBtnActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JButton" name="jButton1">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="-"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
                   </Events>
                 </Component>
               </SubComponents>
@@ -368,7 +421,7 @@
                   <Layout>
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jScrollPane9" alignment="0" pref="993" max="32767" attributes="0"/>
+                          <Component id="jScrollPane9" alignment="0" pref="999" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                     <DimensionLayout dim="1">
@@ -404,7 +457,7 @@
                   <Layout>
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jScrollPane10" alignment="0" pref="993" max="32767" attributes="0"/>
+                          <Component id="jScrollPane10" alignment="0" pref="999" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                     <DimensionLayout dim="1">
@@ -443,7 +496,7 @@
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="editoSp" alignment="0" pref="361" max="32767" attributes="0"/>
+                      <Component id="editoSp" alignment="0" pref="364" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
               </Layout>
@@ -452,11 +505,7 @@
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                   <SubComponents>
-                    <Component class="javax.swing.JTextArea" name="editorTa">
-                      <Properties>
-                        <Property name="columns" type="int" value="20"/>
-                        <Property name="rows" type="int" value="5"/>
-                      </Properties>
+                    <Component class="javax.swing.JTextPane" name="editorTa">
                     </Component>
                   </SubComponents>
                 </Container>

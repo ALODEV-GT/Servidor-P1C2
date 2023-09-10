@@ -1,5 +1,6 @@
 package midik.musica;
 
+import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sound.midi.MidiChannel;

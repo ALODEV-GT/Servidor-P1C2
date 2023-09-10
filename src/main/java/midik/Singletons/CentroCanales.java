@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import midik.musica.Canal;
 import midik.musica.Nota;
+import midik.musica.Pista;
 
 public class CentroCanales {
 
@@ -36,6 +37,16 @@ public class CentroCanales {
 
     public Map<Integer, Canal> getCanales() {
         return this.canales;
+    }
+    
+    public void guardarPista(String nombre, String codigoFuente) {
+        Pista pista = new Pista(nombre, this.canales, codigoFuente);
+        Biblioteca.getInstance().guardarPista(pista);
+    }
+    
+    public void editarPista(String nombre, String codigoFuente, int indexPista) {
+        Pista pista = new Pista(nombre, this.canales, codigoFuente);
+        Biblioteca.getInstance().editarPista(pista, indexPista);
     }
 
 }
