@@ -33,42 +33,42 @@ import midik.musica.Pista;
 import midik.musica.Reproductor;
 
 public class VentanaPrincipal extends javax.swing.JFrame {
-    
+
     private final NumeroLinea numeroLineaPista;
     private String nombrePistaActual = "";
-    
+
     private int indicePistaEditando = -1;
     private int indicePistaSeleccionada = 0;
     private int indiceListaSeleccionada = 0;
     private int indicePistaListaSelecionada = 0;
-    
+
     private StyledDocument styledDoc;
     private Timer timer;
-    
+
     public VentanaPrincipal() {
         Biblioteca.getInstance(); //Recupera las pistas y listas de los archivos binarios.
         initComponents();
         this.numeroLineaPista = new NumeroLinea(editorTa);
         this.editoSp.setRowHeaderView(this.numeroLineaPista);
-        
+
         this.mostrarPistas(listIzq);
         this.mostrarListas(listCentralUp);
-        
+
         this.agregarListenerJListIzq();
         this.agregarCambiarPestanaBotonModificar();
         this.agregarListenerlistCentralUp();
         this.agregarListenerlistCentralDown();
-        
+
         this.cambiarTab();
         this.pintarEditor();
         this.erroresTa.setEditable(false);
         this.consolaTa.setEditable(false);
-        
+
     }
-    
+
     private void pintarEditor() {
         this.styledDoc = editorTa.getStyledDocument();
-        
+
         styledDoc = editorTa.getStyledDocument();
 
         // Crear un Timer para aplicar estilos de forma periódica
@@ -80,9 +80,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         });
         timer.setRepeats(true);
         timer.start();
-        
+
     }
-    
+
     private void resaltarPalabras() {
         String texto = editorTa.getText();
         SimpleAttributeSet redAttr = new SimpleAttributeSet();
@@ -109,22 +109,22 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
         }
     }
-    
+
     private void resaltarPalabra(String palabra, AttributeSet attr) {
         String texto = editorTa.getText();
         int inicio = -1;
-        
+
         while ((inicio = texto.toLowerCase().indexOf(palabra.toLowerCase(), inicio + 1)) >= 0) {
             styledDoc.setCharacterAttributes(inicio, palabra.length(), attr, false);
         }
     }
-    
+
     private void cambiarTab() {
         editorTa.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
             }
-            
+
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_TAB) {
@@ -133,13 +133,13 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                     e.consume(); // Evita que se procese la tecla TAB de forma predeterminada
                 }
             }
-            
+
             @Override
             public void keyReleased(KeyEvent e) {
             }
         });
     }
-    
+
     private void agregarCambiarPestanaBotonModificar() {
         modificarBtn.addActionListener(new ActionListener() {
             @Override
@@ -147,7 +147,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 principalJTP.setSelectedIndex(1);
             }
         });
-        
+
         crearBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
@@ -155,10 +155,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
         });
     }
-    
+
     private void agregarListenerJListIzq() {
         listIzq.addMouseListener(new MouseAdapter() {
-            
+
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 1) { // Detectar un clic
@@ -167,9 +167,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 }
             }
         });
-        
+
         listIzq.addMouseListener(new MouseAdapter() {
-            
+
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) { // Detectar dos clic
@@ -186,10 +186,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
         });
     }
-    
+
     private void agregarListenerlistCentralUp() {
         listCentralUp.addMouseListener(new MouseAdapter() {
-            
+
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 1) { // Detectar un clic
@@ -200,10 +200,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
         });
     }
-    
+
     private void agregarListenerlistCentralDown() {
         listCentralDown.addMouseListener(new MouseAdapter() {
-            
+
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 1) { // Detectar un clic
@@ -212,9 +212,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 }
             }
         });
-        
+
         listCentralDown.addMouseListener(new MouseAdapter() {
-            
+
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) { // Detectar dos clic
@@ -232,7 +232,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
         });
     }
-    
+
     private void mostrarPistaslista(JList<String> jlist) {
         DefaultListModel<String> listaModel = new DefaultListModel<>();
         jlist.setModel(listaModel);
@@ -241,7 +241,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             listaModel.addElement(p.getNombre() + "      " + p.getDuracion());
         }
     }
-    
+
     private void mostrarListas(JList<String> jlist) {
         DefaultListModel<String> listaModel = new DefaultListModel<>();
         jlist.setModel(listaModel);
@@ -250,7 +250,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             listaModel.addElement(l.getNombreLista());
         }
     }
-    
+
     private void mostrarPistas(JList<String> jlist) {
         DefaultListModel<String> listaModel = new DefaultListModel<>();
         jlist.setModel(listaModel);
@@ -259,7 +259,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             listaModel.addElement(p.getNombre() + "      " + p.getDuracion());
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -303,6 +303,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         archivojM = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
+        jMenuItem3 = new javax.swing.JMenuItem();
         ayudajM = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -571,6 +572,14 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         });
         archivojM.add(jMenuItem2);
 
+        jMenuItem3.setText("Sockets");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
+        archivojM.add(jMenuItem3);
+
         jMenuBar1.add(archivojM);
 
         ayudajM.setText("Ayuda");
@@ -603,7 +612,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        
+
         if (this.indicePistaEditando != -1) {
             //Remplazar y limpiar el editor de texto
             CentroCanales.getInstance().editarPista(nombrePistaActual, this.editorTa.getText(), this.indicePistaEditando);
@@ -614,12 +623,12 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             CentroCanales.getInstance().guardarPista(this.nombrePistaActual, this.editorTa.getText());
             this.mostrarPistas(listIzq);
         }
-        
+
 
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void eliminarBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarBtnActionPerformed
-        
+
         try {
             if (this.indicePistaEditando == -1) {
                 Biblioteca.getInstance().eliminarPista(this.indicePistaSeleccionada);
@@ -650,7 +659,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_crearBtnActionPerformed
 
     private void crearListaBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_crearListaBtnActionPerformed
-        
+
         if (crearListaTf.getText().trim().length() > 0) {
             ListaReproduccion lr = new ListaReproduccion(crearListaTf.getText().trim());
             Biblioteca.getInstance().guardarlistaReproduccion(lr);
@@ -658,7 +667,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             //Recargar listado pistas
             this.mostrarListas(listCentralUp);
         }
-        
+
 
     }//GEN-LAST:event_crearListaBtnActionPerformed
 
@@ -690,7 +699,12 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             //No hacer nada y esperar que seleccione una pista
         }
     }//GEN-LAST:event_jButton1ActionPerformed
-    
+
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        ConexionSocket cs = new ConexionSocket(this, true);
+        cs.setVisible(true);
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
+
     private void ejecutar(StringReader entrada) {
         Errores.getInstance().clear();
         CentroCanales.getInstance().clear();
@@ -698,10 +712,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         Consola.getInstance().clear();
         erroresTa.setText("");
         consolaTa.setText("");
-        
+
         AnalizadorLexico lexer = new AnalizadorLexico(entrada, "");
         parser par = new parser(lexer, "");
-        
+
         try {
             par.parse();
             NodoAST raiz = par.getRaiz();
@@ -711,7 +725,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Hay errores", "", JOptionPane.ERROR_MESSAGE);
         }
-        
+
         Errores errs = Errores.getInstance();
         ArrayList<Error> lista = errs.getErrors();
         for (Error e : lista) {
@@ -746,6 +760,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

@@ -1,0 +1,72 @@
+package midik.analizadoresRecibirCancion.cup;
+import java_cup.runtime.Symbol;
+
+parser code
+{:  
+    private String codigoFuente = "";
+    public parser(java_cup.runtime.Scanner s, String param){
+        this(s);
+    }
+
+    public void syntax_error(Symbol s){
+        System.out.println("Error sintactico: " + s.value.toString() + " Linea:" + s.right + " Columna:" + s.left + ". ");
+    }
+
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception {
+        System.out.println("No se pudo recuperar el analizador." + " Linea:" + s.right + " Columna:" + s.left + "\n");
+    }
+
+    public String getCodigoFuente(){
+        return codigoFuente;
+    }
+:};
+
+terminal String SOLICITUD_A,TIPO_A,DATOS_A,CANAL_A,NOTA_A,OCTAVA_A,DURACION_A,
+SOLICITUD_C,TIPO_C,DATOS_C,CANAL_C,NOTA_C,OCTAVA_C,DURACION_C,DO,DOS,RE,RES,
+MI,FA,FAS,SOL,SOLS,LA,LAS,SI,SILENCIO,MAYOR,MENOR,DIAG,NUMEROS,ID;
+
+non terminal String s, cuerpo, notas, nota, canalrep, notarep, 
+                    octavarep, duracionrep, lista_notas;
+
+
+start with s;
+
+s ::= SOLICITUD_A cuerpo:h1 SOLICITUD_C {: codigoFuente=h1; :}
+;
+
+cuerpo ::= TIPO_A  ID:h1 TIPO_C notas:h2 {: RESULT="Pista "+h1+"{Principal(){"+h2+"}}"; :}
+;
+
+notas ::= notas:h1 nota:h2 {: RESULT=h1 + " " + h2; :}
+| nota: h1 {: RESULT=h1; :}
+;
+
+nota ::= DATOS_A canalrep:h4 notarep:h1 octavarep:h2 duracionrep:h3 DATOS_C    {: if(h1.equals("R")){RESULT="Esperar("+h3+","+h4+");";}else{  RESULT="Reproducir(\""+h1+"\","+h2+","+h3+","+h4+");";} :}
+;
+
+canalrep ::= CANAL_A NUMEROS:h1 CANAL_C            {: RESULT=h1; :}
+; 
+
+notarep ::= NOTA_A lista_notas:h1 NOTA_C           {: RESULT=h1; :}
+; 
+
+octavarep ::= OCTAVA_A NUMEROS:h1 OCTAVA_C         {: RESULT=h1; :}
+; 
+
+duracionrep ::= DURACION_A NUMEROS:h1 DURACION_C   {: RESULT=h1; :}
+;
+
+lista_notas ::= DO:h1   {: RESULT=h1; :}
+|DOS:h1         {: RESULT=h1; :}
+|RE:h1          {: RESULT=h1; :}
+|RES:h1         {: RESULT=h1; :}
+|MI:h1          {: RESULT=h1; :}
+|FA:h1          {: RESULT=h1; :}
+|FAS:h1         {: RESULT=h1; :}
+|SOL:h1         {: RESULT=h1; :}
+|SOLS:h1        {: RESULT=h1; :}
+|LA:h1          {: RESULT=h1; :}
+|LAS:h1         {: RESULT=h1; :}
+|SI:h1          {: RESULT=h1; :}
+|SILENCIO:h1    {: RESULT=h1; :}
+;

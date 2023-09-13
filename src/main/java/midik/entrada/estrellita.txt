@@ -1,0 +1,61 @@
+Pista nueva{
+Principal(){
+Para(Var Entero i = 0; i < 3; i = i +1){
+        Reproducir("Do", 2 * (i+1), 500, i);
+        Reproducir("Do", 2 * (i+1), 500, i);
+        Reproducir("Sol", 2 * (i+1), 500, i);
+        Reproducir("Sol", 2 * (i+1), 500, i);
+        Reproducir("La", 2 * (i+1), 500, i);
+        Reproducir("La", 2 * (i+1), 500, i);
+        Reproducir("Sol", 2 * (i+1), 500, i);
+        Esperar(500, i);
+
+        Reproducir("Fa", 2 * (i+1), 500, i);
+        Reproducir("Fa", 2 * (i+1), 500, i);
+        Reproducir("Mi", 2 * (i+1), 500, i);
+        Reproducir("Mi", 2 * (i+1), 500, i);
+        Reproducir("Re", 2 * (i+1), 500, i);
+        Reproducir("Re", 2 * (i+1), 500, i);
+        Reproducir("Do", 2 * (i+1), 500, i);
+        Esperar(500, i);
+
+        Reproducir("Sol", 2 * (i+1), 500, i);
+        Reproducir("Sol", 2 * (i+1), 500, i);
+        Reproducir("Fa", 2 * (i+1), 500, i);
+        Reproducir("Fa", 2 * (i+1), 500, i);
+        Reproducir("Mi", 2 * (i+1), 500, i);
+        Reproducir("Mi", 2 * (i+1), 500, i);
+        Reproducir("Re", 2 * (i+1), 500, i);
+        Esperar(500, i);
+
+Si(2*(i+1)<5){
+        Reproducir("Sol", 2 * (i+1), 500, i);
+        Reproducir("Sol", 2 * (i+1), 500, i);
+        Reproducir("Fa", 2 * (i+1), 500, i);
+        Reproducir("Fa", 2 * (i+1), 500, i);
+        Reproducir("Mi", 2 * (i+1), 500, i);
+        Reproducir("Mi", 2 * (i+1), 500, i);
+        Reproducir("Re", 2 * (i+1), 500, i);
+        Esperar(500, i);
+
+        Reproducir("Do", 2 * (i+1), 500, i);
+        Reproducir("Do", 2 * (i+1), 500, i);
+        Reproducir("Sol", 2 * (i+1), 500, i);
+        Reproducir("Sol", 2 * (i+1), 500, i);
+        Reproducir("La", 2 * (i+1), 500, i);
+        Reproducir("La", 2 * (i+1), 500, i);
+        Reproducir("Sol", 2 * (i+1), 500, i);
+        Esperar(500, i);
+
+        Reproducir("Fa", 2 * (i+1), 500, i);
+        Reproducir("Fa", 2 * (i+1), 500, i);
+        Reproducir("Mi", 2 * (i+1), 500, i);
+        Reproducir("Mi", 2 * (i+1), 500, i);
+        Reproducir("Re", 2 * (i+1), 500, i);
+        Reproducir("Re", 2 * (i+1), 500, i);
+        Reproducir("Do", 2 * (i+1), 500, i);
+}
+}
+}
+}
+

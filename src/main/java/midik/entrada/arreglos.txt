@@ -1,0 +1,79 @@
+
+Pista nuevaPista {
+
+Var Entero num  = 5;
+Entero sumar(){
+    Mensaje("hola");
+}
+Mensaje("sandia");
+Principal(){
+    Var Entero i = 0;
+}
+
+<--
+Var Cadena cad = "Hola mundo";
+Var Entero Arreglo arr10 [][][]= {{{1+1,2,3},{1,2,3},{1,2,3}},{{1,2,3},{1,2,3},{1,2,3}},{{1,2,3},{1,2,3},{1,2,12.52}}};
+Mensaje(Longitud(cad));
+Mensaje(Longitud(arr10));
+-->
+
+<--
+Var Doble Arreglo arr2 []={12.51,14.15,18.9,25.4};
+Mensaje("Resultado : " + Sumarizar(arr2));
+-->
+
+<--
+Mensaje(Reproducir("Do", 0, 3251, 1));
+-->
+
+<--
+ Reproducir("Do", 0, 3000, 1);
+ Reproducir("Do", 1, 3000, 2);
+ Reproducir("Do", 2, 3000, 3);
+ Reproducir("Do", 3, 3000, 4);
+ Reproducir("Do", 4, 3000, 5);
+ Reproducir("Do", 5, 3000, 6);
+ Reproducir("Do", 6, 3000, 7);
+ Reproducir("Do", 7, 3000, 8);
+ Reproducir("Do", 8, 3000, 9);
+-->
+
+<--
+    Var Boolean band1 = 44+6!=4;
+    Var Boolean band2 = 1+2>60;
+    Si(band1 &| band2){
+        Mensaje("Entreeeee!");
+    }
+-->
+<--
+    Entero sumar(Entero num1, Entero num2){
+        Retorna num1 + num2;
+    }
+    
+    Mensaje("La suma es: " + (sumar(5,9) * sumar(3,8)));
+-->
+<--
+    Var Entero Arreglo miArreglo [][][]= {{{0,1,2},{3,4,5},{6,7,8}},{{9,10,11},{12,13,14},{15,16,17}},{{18,19,20},{21,22,23},{24,25,26}}};
+    Var Entero numero = miArreglo[1][1][1];
+    Var Entero num1 = 5;
+    num1 = 1000;
+    miArreglo[1][1][1] = 12345;
+ -->
+
+ <--
+    Var Entero Arreglo arr2 []={1,2,3,4,5,6};
+    Var Entero Arreglo arr3 [6];
+   Var Entero Arreglo arr1 [4][4];
+    Var Entero Arreglo arr2 []={1,2,3,4,5,6};
+    Var Entero Arreglo arr4, arr5, arr6 [5][5];
+    Var Entero Arreglo arr7, arr8, arr9  [][]={{1,2,3},{1,2,3},{1,2,3}};
+    Var Entero Arreglo arr10 [][][]= {{{1+1,2,3},{1,2,3},{1,2,3}},{{1,2,3},{1,2,3},{1,2,3}},{{1,2,3},{1,2,3},{1,2,12.52}}};
+    Var Entero Arreglo arr11[]={};
+-->
+<--
+    Var Entero Arreglo arr1[];
+    Var Entero Arreglo arr2[5]={1,2,3};
+    Var Entero Arreglo arr3 [5][8];
+    Var Entero Arreglo arr4 [][]={1,2,3,4,5,6};
+-->
+}

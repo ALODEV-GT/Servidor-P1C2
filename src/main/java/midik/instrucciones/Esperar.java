@@ -33,7 +33,7 @@ public class Esperar extends Instruccion {
                 return null;
             }
         }
-
+        
         Long tiempo = (Integer.valueOf(((String) ((Nativo) (((Instruccion) this.parametros.get(0)).ejecutar(entorno))).getValor()))).longValue();
         Integer canal = Integer.valueOf(((String) ((Nativo) (((Instruccion) this.parametros.get(1)).ejecutar(entorno))).getValor()));
 
