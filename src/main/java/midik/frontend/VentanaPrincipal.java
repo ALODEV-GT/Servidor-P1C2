@@ -24,6 +24,7 @@ import midik.Singletons.CentroCanalesThread;
 import midik.Singletons.Consola;
 import midik.Singletons.Errores;
 import midik.Singletons.Error;
+import midik.Singletons.FrontendSingleton;
 import midik.arbol.NodoAST;
 import midik.cup.parser;
 import midik.ejecucion.Ejecucion;
@@ -48,6 +49,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     public VentanaPrincipal() {
         Biblioteca.getInstance(); //Recupera las pistas y listas de los archivos binarios.
         initComponents();
+        FrontendSingleton.getInstance().setJlist(listIzq);
+        
         this.numeroLineaPista = new NumeroLinea(editorTa);
         this.editoSp.setRowHeaderView(this.numeroLineaPista);
 

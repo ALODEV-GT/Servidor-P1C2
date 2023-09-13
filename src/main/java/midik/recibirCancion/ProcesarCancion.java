@@ -2,20 +2,25 @@ package midik.recibirCancion;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
+import midik.Singletons.Biblioteca;
 import midik.Singletons.CentroCanales;
 import midik.Singletons.CentroCanalesThread;
 import midik.Singletons.Consola;
 import midik.Singletons.Errores;
+import midik.Singletons.FrontendSingleton;
 import midik.analizadoresRecibirCancion.cup.parser;
 import midik.analizadoresRecibirCancion.jlex.AnalizadorLexicoRC;
 import midik.arbol.NodoAST;
 import midik.ejecucion.Ejecucion;
 import midik.jflex.AnalizadorLexico;
+import midik.musica.Pista;
 
 public class ProcesarCancion {
 
     private String nombrePista;
-    private String codigoFuente;
+    private final String codigoFuente;
     private String codigoFuenteMusic;
 
     public ProcesarCancion(String codigoFuente) {
@@ -71,8 +76,17 @@ public class ProcesarCancion {
         }
 
         CentroCanales.getInstance().guardarPista(this.nombrePista, codigoFuenteMusic);
-
+        this.mostrarPistas(FrontendSingleton.getInstance().getJlist());
         return guardado;
+    }
+
+    private void mostrarPistas(JList<String> jlist) {
+        DefaultListModel<String> listaModel = new DefaultListModel<>();
+        jlist.setModel(listaModel);
+        ArrayList<Pista> pistas = Biblioteca.getInstance().getPistas();
+        for (Pista p : pistas) {
+            listaModel.addElement(p.getNombre() + "      " + p.getDuracion());
+        }
     }
 
 }
